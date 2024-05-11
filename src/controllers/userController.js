@@ -1,4 +1,4 @@
-const User = require("../models/user"); // Adjust the path as necessary
+const User = require("../models/user");
 
 // Update a user by ID
 exports.updateUserById = async (req, res) => {
