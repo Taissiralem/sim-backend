@@ -8,6 +8,8 @@ const userController = require("../../controllers/userController"); // Adjust th
 
 // Route to update a user by ID
 router.put("/:id", userController.updateUserById);
+// Route to get users count
+router.get("/count", userController.countUsers);
 
 // Route to delete a user by ID
 router.delete("/:id", userController.deleteUserById);
