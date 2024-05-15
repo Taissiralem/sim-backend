@@ -78,3 +78,12 @@ exports.deleteProductById = async (req, res) => {
     res.status(500).json({ error: "Failed to delete product" });
   }
 };
+exports.countProducts = async (req, res) => {
+  try {
+    const productsCount = await Product.countDocuments();
+    res.json({ count: productsCount });
+  } catch (err) {
+    console.error("Error counting products:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
