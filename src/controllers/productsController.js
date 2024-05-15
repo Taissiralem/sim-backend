@@ -80,8 +80,8 @@ exports.deleteProductById = async (req, res) => {
 };
 exports.countProducts = async (req, res) => {
   try {
-    const productsCount = await Product.countDocuments();
-    res.json({ count: productsCount });
+    const productCount = await Product.countDocuments();
+    res.json({ count: productCount });
   } catch (err) {
     console.error("Error counting products:", err);
     res.status(500).json({ error: "Internal server error" });

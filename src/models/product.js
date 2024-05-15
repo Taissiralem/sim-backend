@@ -18,7 +18,7 @@ const productSchema = new Schema(
     },
     images: [
       {
-        type: string,
+        type: String,
       },
     ],
     marque: {
