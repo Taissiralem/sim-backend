@@ -2,17 +2,17 @@ const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
-const categorieSchema = new Schema({
+const typeSchema = new Schema({
   title: {
     type: String,
     required: true,
   },
-  famille: {
+  category: {
     type: mongoose.Types.ObjectId,
-    ref: "Famille",
+    ref: "Category",
   },
 });
 
-const Category = mongoose.model("Category", categorieSchema);
+const Type = mongoose.model("Type", typeSchema);
 
-module.exports = Category;
+module.exports = Type;

@@ -2,19 +2,19 @@ const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
-const marqueSchema = new Schema({
+const familleSchema = new Schema({
   title: {
     type: String,
     required: true,
   },
-  gammes: [
+  categories: [
     {
       type: mongoose.Types.ObjectId,
-      ref: "Gamme",
+      ref: "Category",
     },
   ],
 });
 
-const Marque = mongoose.model("Marque", marqueSchema);
+const Famille = mongoose.model("Famille", familleSchema);
 
-module.exports = Marque;
+module.exports = Famille;
