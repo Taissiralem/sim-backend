@@ -1,0 +1,10 @@
+const { Router } = require("express");
+const CommandesController = require("../../controllers/commandescontroller");
+const router = Router();
+router.get("/validate/:id", CommandesController.ValidateCommandes);
+router.get("/count", CommandesController.countCommandes);
+router.post("/create", CommandesController.createCommande);
+router.delete("/:id", CommandesController.deleteCommandeById);
+router.get("/", CommandesController.getAllCommandes);
+router.get("/:id", CommandesController.getCommandeById);
+module.exports = router;
