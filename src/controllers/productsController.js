@@ -21,11 +21,17 @@ exports.createProduct = async (req, res) => {
 };
 exports.getAllProducts = async (req, res) => {
   try {
+    const page = req.query.page || 1;
+    const pageSize = 10;
+    const totalCount = await Product.countDocuments();
+    const totalPages = Math.ceil(totalCount / pageSize);
     const products = await Product.find()
       .populate("marque")
       .populate("gamme")
-      .populate("category");
-    res.status(200).json(products);
+      .populate("category")
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+    res.status(200).json({ products, totalPages });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch products" });
