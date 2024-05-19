@@ -18,11 +18,17 @@ exports.createCommande = async (req, res) => {
 
 exports.getAllCommandes = async (req, res) => {
   try {
+    const page = req.query.page || 1;
+    const pageSize = 10;
+    const totalCount = await Commandes.countDocuments();
+    const totalPages = Math.ceil(totalCount / pageSize);
     const commandes = await Commandes.find()
       .populate("user")
-      .populate("product");
+      .populate("product")
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
 
-    res.status(200).json(commandes);
+    res.status(200).json({ commandes, totalPages });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch commandes" });
@@ -76,9 +82,27 @@ exports.ValidateCommandes = async (req, res) => {
     }
     commande.isValid = !commande.isValid;
     const ress = await commande.save();
-    console.log(ress);
+
     res.status(200).json({ message: "Commande validated successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+exports.ValidatedCommandesCount = async (req, res) => {
+  try {
+    const CommandesCount = await Commandes.countDocuments({ isValid: true });
+    res.json({ count: CommandesCount });
+  } catch (err) {
+    console.error("Error counting orders:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+exports.PendigCommandesCount = async (req, res) => {
+  try {
+    const CommandesCount = await Commandes.countDocuments({ isValid: false });
+    res.json({ count: CommandesCount });
+  } catch (err) {
+    console.error("Error counting orders:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
