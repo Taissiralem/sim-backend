@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
-
 const { Schema } = mongoose;
-
 const productSchema = new Schema(
   {
     title: {
@@ -21,17 +19,23 @@ const productSchema = new Schema(
         type: String,
       },
     ],
-    marque: {
+    famille: {
       type: mongoose.Types.ObjectId,
-      ref: "Marque",
-    },
-    gamme: {
-      type: mongoose.Types.ObjectId,
-      ref: "Gamme",
+      ref: "Famille",
     },
     category: {
       type: mongoose.Types.ObjectId,
       ref: "Category",
+    },
+    type: {
+      type: mongoose.Types.ObjectId,
+      ref: "Type",
+    },
+    marque: {
+      type: String,
+    },
+    gamme: {
+      type: String,
     },
   },
   {
