@@ -12,7 +12,7 @@ const path = require("path");
 const server = express();
 
 //init cors
-server.use(cors({ credentials: true, origin: process.env.ORIGIN }));
+server.use(cors());
 
 //use json
 server.use(express.json());

@@ -40,8 +40,14 @@ exports.deleteUserById = async (req, res) => {
 // Fetch all users
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find(); // Fetch all users from the database
-    res.status(200).json(users);
+    const page = req.query.page || 1;
+    const pageSize = 10;
+    const totalCount = await User.countDocuments();
+    const totalPages = Math.ceil(totalCount / pageSize);
+    const users = await User.find()
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+    return res.status(200).json({ users, totalPages });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
