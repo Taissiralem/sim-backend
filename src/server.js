@@ -16,6 +16,7 @@ server.use(cors());
 
 //use json
 server.use(express.json());
+server.use(express.urlencoded({ extended: true }));
 
 // access log
 const logStream = fs.createWriteStream(path.join(__dirname, "access.log"), {

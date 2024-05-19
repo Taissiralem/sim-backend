@@ -11,6 +11,12 @@ const categorieSchema = new Schema({
     type: mongoose.Types.ObjectId,
     ref: "Famille",
   },
+  types: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Type",
+    },
+  ],
 });
 
 const Category = mongoose.model("Category", categorieSchema);
