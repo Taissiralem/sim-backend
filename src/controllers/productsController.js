@@ -39,7 +39,7 @@ exports.getAllProducts = async (req, res) => {
     const products = await Product.find()
       .populate("famille", "title")
       .populate("category", "title")
-      .populate("type", "title");
+      .populate("type", "title")
       .skip((page - 1) * pageSize)
       .limit(pageSize);
     res.status(200).json({ products, totalPages });
