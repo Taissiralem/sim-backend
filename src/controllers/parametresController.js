@@ -49,13 +49,19 @@ exports.getAllFamilles = async (req, res) => {
   try {
     const page = req.query.page || 1;
     const pageSize = 10;
-    const totalCount = await Famille.countDocuments();
-    const totalPages = Math.ceil(totalCount / pageSize);
-    const familles = await Famille.find()
-      .populate("categories")
-      .skip((page - 1) * pageSize)
-      .limit(pageSize);
-    res.status(200).json({ familles, totalPages });
+    let query = Famille.find().populate("categories");
+    let totalCountPromise = Famille.countDocuments();
+
+    if (req.query.pagination && req.query.pagination.toLowerCase() === "true") {
+      const totalCount = await totalCountPromise;
+      const totalPages = Math.ceil(totalCount / pageSize);
+      query = query.skip((page - 1) * pageSize).limit(pageSize);
+      const familles = await query;
+      res.status(200).json({ familles, totalPages });
+    } else {
+      const familles = await query;
+      res.status(200).json({ familles });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -65,14 +71,19 @@ exports.getAllCategories = async (req, res) => {
   try {
     const page = req.query.page || 1;
     const pageSize = 10;
-    const totalCount = await Category.countDocuments();
-    const totalPages = Math.ceil(totalCount / pageSize);
-    const categories = await Category.find()
-      .populate("types")
-      .populate("famille")
-      .skip((page - 1) * pageSize)
-      .limit(pageSize);
-    res.status(200).json({ categories, totalPages });
+    let query = Category.find().populate("types").populate("famille");
+    let totalCountPromise = Category.countDocuments();
+
+    if (req.query.pagination && req.query.pagination.toLowerCase() === "true") {
+      const totalCount = await totalCountPromise;
+      const totalPages = Math.ceil(totalCount / pageSize);
+      query = query.skip((page - 1) * pageSize).limit(pageSize);
+      const categories = await query;
+      res.status(200).json({ categories, totalPages });
+    } else {
+      const categories = await query;
+      res.status(200).json({ categories });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -82,13 +93,19 @@ exports.getAllTypes = async (req, res) => {
   try {
     const page = req.query.page || 1;
     const pageSize = 10;
-    const totalCount = await Type.countDocuments();
-    const totalPages = Math.ceil(totalCount / pageSize);
-    const types = await Type.find()
-      .populate("category")
-      .skip((page - 1) * pageSize)
-      .limit(pageSize);
-    res.status(200).json({ types, totalPages });
+    let query = Type.find().populate("category");
+    let totalCountPromise = Type.countDocuments();
+
+    if (req.query.pagination && req.query.pagination.toLowerCase() === "true") {
+      const totalCount = await totalCountPromise;
+      const totalPages = Math.ceil(totalCount / pageSize);
+      query = query.skip((page - 1) * pageSize).limit(pageSize);
+      const types = await query;
+      res.status(200).json({ types, totalPages });
+    } else {
+      const types = await query;
+      res.status(200).json({ types });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
