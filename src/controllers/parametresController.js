@@ -4,8 +4,8 @@ const Type = require("../models/type");
 
 exports.createFamille = async (req, res) => {
   try {
-    const { title } = req.body;
-    const famille = new Famille({ title });
+    const { titlefr, titleen } = req.body;
+    const famille = new Famille({ titlefr, titleen });
     await famille.save();
     res.status(201).json(famille);
   } catch (error) {
@@ -15,8 +15,14 @@ exports.createFamille = async (req, res) => {
 
 exports.createCategory = async (req, res) => {
   try {
-    const { title, familleId } = req.body;
-    const category = new Category({ title, famille: familleId });
+    const { titlefr, titleen, familleId } = req.body;
+    const image = req.image;
+    const category = new Category({
+      titlefr,
+      titleen,
+      famille: familleId,
+      image,
+    });
     await category.save();
 
     await Famille.findByIdAndUpdate(familleId, {
@@ -31,8 +37,8 @@ exports.createCategory = async (req, res) => {
 
 exports.createType = async (req, res) => {
   try {
-    const { title, categoryId } = req.body;
-    const type = new Type({ title, category: categoryId });
+    const { titlefr, titleen, categoryId } = req.body;
+    const type = new Type({ titlefr, titleen, category: categoryId });
     await type.save();
 
     await Category.findByIdAndUpdate(categoryId, {
@@ -62,6 +68,33 @@ exports.getAllFamilles = async (req, res) => {
       const familles = await query;
       res.status(200).json({ familles });
     }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.getFamilleById = async (req, res) => {
+  try {
+    const { famillId } = req.params;
+    const famille = await Famille.findById(famillId).populate("categories");
+
+    if (!famille) {
+      return res.status(404).json({ error: "Famille not found" });
+    }
+
+    res.status(200).json(famille);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+// get categori by id
+exports.getCategoryById = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const category = await Category.findById(categoryId).populate("types");
+    if (!category) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+    res.status(200).json(category);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

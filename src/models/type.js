@@ -3,7 +3,11 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const typeSchema = new Schema({
-  title: {
+  titlefr: {
+    type: String,
+    required: true,
+  },
+  titleen: {
     type: String,
     required: true,
   },
