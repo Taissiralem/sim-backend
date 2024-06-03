@@ -25,6 +25,16 @@ const userSchema = new Schema(
       type: String,
       default: "user",
     },
+    level: {
+      name: {
+        enum: ["bronze", "silver", "gold", "diamond"],
+        default: "bronze",
+      },
+      points: {
+        type: Number,
+        default: 0,
+      },
+    },
   },
   {
     timestamps: true,
