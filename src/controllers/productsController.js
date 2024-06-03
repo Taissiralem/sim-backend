@@ -1,4 +1,6 @@
+const { default: mongoose } = require("mongoose");
 const Product = require("../models/product");
+
 exports.createProduct = async (req, res) => {
   try {
     const {
@@ -101,64 +103,97 @@ exports.countProducts = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 exports.getProductsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
     const page = parseInt(req.query.page) || 1;
     const pageSize = 10;
 
-    const products = await Product.aggregate([
-      { $match: { category: mongoose.Types.ObjectId(category) } },
-      { $skip: (page - 1) * pageSize },
-      { $limit: pageSize },
-      {
-        $lookup: {
-          from: "familles",
-          localField: "famille",
-          foreignField: "_id",
-          as: "familleDetails",
-        },
-      },
-      { $unwind: "$familleDetails" },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "category",
-          foreignField: "_id",
-          as: "categoryDetails",
-        },
-      },
-      { $unwind: "$categoryDetails" },
-      {
-        $lookup: {
-          from: "types",
-          localField: "type",
-          foreignField: "_id",
-          as: "typeDetails",
-        },
-      },
-      { $unwind: { path: "$typeDetails", preserveNullAndEmptyArrays: true } },
-      {
-        $project: {
-          title: 1,
-          price: 1,
-          description: 1,
-          images: 1,
-          famille: "$familleDetails.title",
-          category: "$categoryDetails.title",
-          type: "$typeDetails.title",
-        },
-      },
-    ]);
+    // Convert category to ObjectId
+    const categoryObjectId = new mongoose.Types.ObjectId(category);
 
+    // Find products by category with pagination
+    const products = await Product.find({ category: categoryObjectId })
+      .populate("famille", "title")
+      .populate("category", "title")
+      .populate("type", "title")
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .select("title price description images famille category type");
+
+    // Count total number of products in the specified category
     const totalCount = await Product.countDocuments({
-      category: mongoose.Types.ObjectId(category),
+      category: categoryObjectId,
     });
     const totalPages = Math.ceil(totalCount / pageSize);
 
+    // Send response
     res.status(200).json({ products, totalPages });
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching products by category:", error);
     res.status(500).json({ error: "Failed to fetch products by category" });
   }
 };
+
+// exports.getProductsByCategory = async (req, res) => {
+//   try {
+//     const { category } = req.params;
+//     const page = parseInt(req.query.page) || 1;
+//     const pageSize = 10;
+
+//     const products = await Product.aggregate([
+//       { $match: { category: mongoose.Types.ObjectId(category) } },
+//       { $skip: (page - 1) * pageSize },
+//       { $limit: pageSize },
+//       {
+//         $lookup: {
+//           from: "familles",
+//           localField: "famille",
+//           foreignField: "_id",
+//           as: "familleDetails",
+//         },
+//       },
+//       { $unwind: "$familleDetails" },
+//       {
+//         $lookup: {
+//           from: "categories",
+//           localField: "category",
+//           foreignField: "_id",
+//           as: "categoryDetails",
+//         },
+//       },
+//       { $unwind: "$categoryDetails" },
+//       {
+//         $lookup: {
+//           from: "types",
+//           localField: "type",
+//           foreignField: "_id",
+//           as: "typeDetails",
+//         },
+//       },
+//       { $unwind: { path: "$typeDetails", preserveNullAndEmptyArrays: true } },
+//       {
+//         $project: {
+//           title: 1,
+//           price: 1,
+//           description: 1,
+//           images: 1,
+//           famille: "$familleDetails.title",
+//           category: "$categoryDetails.title",
+//           type: "$typeDetails.title",
+//         },
+//       },
+//     ]);
+
+//     const totalCount = await Product.countDocuments({
+//       category: mongoose.Types.ObjectId(category),
+//     });
+//     const totalPages = Math.ceil(totalCount / pageSize);
+
+//     res.status(200).json({ products, totalPages });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Failed to fetch products by category" });
+//   }
+// };
