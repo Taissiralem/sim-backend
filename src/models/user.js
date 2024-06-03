@@ -28,7 +28,6 @@ const userSchema = new Schema(
     level: {
       name: {
         enum: ["bronze", "silver", "gold", "diamond"],
-        default: "bronze",
       },
       points: {
         type: Number,
