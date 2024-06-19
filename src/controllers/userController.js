@@ -80,3 +80,32 @@ exports.countUsers = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+exports.getUserCommandes = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId).populate("commandes");
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.status(200).json(user.commandes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to retrieve user commandes" });
+  }
+};
+exports.getUserLevel = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.status(200).json({
+      level: user.level,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch user level information" });
+  }
+};

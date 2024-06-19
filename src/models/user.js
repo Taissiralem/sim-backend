@@ -25,9 +25,16 @@ const userSchema = new Schema(
       type: String,
       default: "user",
     },
+    commandes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Commandes",
+      },
+    ],
     level: {
       name: {
-        enum: ["bronze", "silver", "gold", "diamond"],
+        type: String,
+        default: "bronze",
       },
       points: {
         type: Number,

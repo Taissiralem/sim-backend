@@ -28,9 +28,13 @@ exports.signup = async (req, res) => {
 
   try {
     await user.save();
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "3h",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "18h",
+      }
+    );
     return res
       .status(201)
       .json({ message: "Successfully Signed Up and Logged In", user, token });
@@ -58,9 +62,13 @@ exports.signin = async (req, res) => {
   if (!isPasswordCorrect) {
     return res.status(400).json({ message: "invalid Email / password" });
   }
-  const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET_KEY, {
-    expiresIn: "3h",
-  });
+  const token = jwt.sign(
+    { id: existingUser._id, role: existingUser.role },
+    process.env.JWT_SECRET_KEY,
+    {
+      expiresIn: "3h",
+    }
+  );
 
   return res.status(200).json({
     message: "Successfully Logged In",
