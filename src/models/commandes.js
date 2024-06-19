@@ -11,12 +11,20 @@ const CommandesSchema = new Schema(
     user: {
       type: mongoose.Types.ObjectId,
       ref: "User",
-      required: true,
     },
-
+    clientName: {
+      type: "String",
+    },
+    phoneNumber: {
+      type: String,
+    },
     product: {
       type: mongoose.Types.ObjectId,
       ref: "Product",
+      required: true,
+    },
+    totalPrice: {
+      type: Number,
       required: true,
     },
     isValid: {

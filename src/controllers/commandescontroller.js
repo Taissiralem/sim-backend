@@ -1,21 +1,48 @@
 const Commandes = require("../models/commandes");
+const User = require("../models/user");
 exports.createCommande = async (req, res) => {
   try {
-    const { quantity, user, product } = req.body;
+    const { quantity, user, product, client, phoneNumber, totalPrice } =
+      req.body;
+
+    // Create a new Commande
     const newCommande = new Commandes({
       quantity,
       user,
       product,
+      client,
+      phoneNumber,
+      totalPrice,
     });
 
+    // Save the new Commande to the database
     const savedCommande = await newCommande.save();
+
+    // Check if the user exists and update their points, commandes, and level
+    if (user) {
+      const foundUser = await User.findById(user);
+      if (foundUser) {
+        const pointsToAdd = totalPrice / 10000;
+        foundUser.level.points += pointsToAdd;
+        if (foundUser.level.points >= 1000) {
+          foundUser.level.name = "diamond";
+        } else if (foundUser.level.points >= 100) {
+          foundUser.level.name = "gold";
+        } else if (foundUser.level.points >= 10) {
+          foundUser.level.name = "silver";
+        } else {
+          foundUser.level.name = "bronze";
+        }
+        foundUser.commandes.push(savedCommande._id);
+        await foundUser.save();
+      }
+    }
     res.status(201).json(savedCommande);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to create commande" });
   }
 };
-
 exports.getAllCommandes = async (req, res) => {
   try {
     const page = req.query.page || 1;
