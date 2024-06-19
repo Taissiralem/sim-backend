@@ -32,6 +32,22 @@ exports.createProduct = async (req, res) => {
     res.status(500).json({ error: "Failed to create product" });
   }
 };
+exports.updateProductById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedData = req.imageURLs;
+    console.log(req.imageURLs);
+    const updatedProduct = await Product.findByIdAndUpdate(id, updatedData);
+
+    if (!updatedProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update product" });
+  }
+};
 exports.getAllProducts = async (req, res) => {
   try {
     const page = req.query.page || 1;
@@ -64,23 +80,6 @@ exports.getProductById = async (req, res) => {
   }
 };
 
-exports.updateProductById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updatedData = req.body;
-    const updatedProduct = await Product.findByIdAndUpdate(id, updatedData, {
-      new: true,
-    });
-
-    if (!updatedProduct) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-    res.status(200).json(updatedProduct);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to update product" });
-  }
-};
 exports.deleteProductById = async (req, res) => {
   try {
     const { id } = req.params;

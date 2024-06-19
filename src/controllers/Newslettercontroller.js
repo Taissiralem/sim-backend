@@ -31,3 +31,12 @@ exports.getAllNewsletters = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch newsletters" });
   }
 };
+exports.countAllNewsletters = async (req, res) => {
+  try {
+    const NewsletterCount = await Newsletter.countDocuments();
+    res.json({ count: NewsletterCount });
+  } catch (err) {
+    console.error("Error counting Newsletters:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

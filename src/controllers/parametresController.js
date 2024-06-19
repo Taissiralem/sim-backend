@@ -6,7 +6,7 @@ exports.createFamille = async (req, res) => {
   try {
     const { titlefr, titleen } = req.body;
     const famille = new Famille({ titlefr, titleen });
-    await famille.save();
+    await famille.save();x
     res.status(201).json(famille);
   } catch (error) {
     res.status(500).json({ error: error.message });
