@@ -121,6 +121,26 @@ exports.ValidateCommandes = async (req, res) => {
           await foundUser.save();
         }
       }
+    }else{
+      const user = commande.user;
+      if (user) {
+        const foundUser = await User.findById(user);
+        if (foundUser) {
+          const pointsToAdd = commande.totalPrice / 10000;
+          foundUser.level.points -= pointsToAdd;
+
+          if (foundUser.level.points >= 1000) {
+            foundUser.level.name = "diamond";
+          } else if (foundUser.level.points >= 100) {
+            foundUser.level.name = "gold";
+          } else if (foundUser.level.points >= 10) {
+            foundUser.level.name = "silver";
+          } else {
+            foundUser.level.name = "bronze";
+          }
+          await foundUser.save();
+        }
+      }
     }
     await commande.save();
     res.status(200).json({ message: "Commande validated successfully" });
