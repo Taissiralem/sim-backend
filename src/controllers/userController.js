@@ -5,7 +5,9 @@ exports.updateUserById = async (req, res) => {
   try {
     const { id } = req.params;
     const { FirstName, LastName, email } = req.body;
-
+    if(req.authuser.id !== id && req.authuser.role !== "admin") {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
     // Find the user by ID and update their data
     const user = await User.findByIdAndUpdate(
       id,
@@ -57,7 +59,9 @@ exports.getAllUsers = async (req, res) => {
 exports.getUserById = async (req, res) => {
   try {
     const { id } = req.params;
-
+    if(req.authuser.id !== id && req.authuser.role !== "admin") {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
     // Find the user by ID
     const user = await User.findById(id);
 
@@ -84,6 +88,10 @@ exports.countUsers = async (req, res) => {
 exports.getUserCommandes = async (req, res) => {
   try {
     const userId = req.params.userId;
+
+    if(req.authuser.id !== userId && req.authuser.role !== "admin") {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
     const user = await User.findById(userId).populate({
       path: "commandes",
       populate: {
@@ -103,6 +111,9 @@ exports.getUserCommandes = async (req, res) => {
 exports.getUserLevel = async (req, res) => {
   try {
     const userId = req.params.userId;
+    if(req.authuser.id !== userId && req.authuser.role !== "admin") {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -119,6 +130,9 @@ exports.getUserLevel = async (req, res) => {
 exports.updateUserTour = async (req, res) => {
   const { userId } = req.params;
   try {
+    if(req.authuser.id !== userId && req.authuser.role !== "admin") {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "user not found." });
@@ -133,3 +147,4 @@ exports.updateUserTour = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
