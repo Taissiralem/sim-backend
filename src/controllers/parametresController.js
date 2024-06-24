@@ -6,7 +6,7 @@ exports.createFamille = async (req, res) => {
   try {
     const { titlefr, titleen } = req.body;
     const famille = new Famille({ titlefr, titleen });
-    await famille.save();x
+    await famille.save();
     res.status(201).json(famille);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -104,7 +104,9 @@ exports.getAllCategories = async (req, res) => {
   try {
     const page = req.query.page || 1;
     const pageSize = 10;
-    let query = Category.find().populate("types").populate("famille");
+    let query = Category.find()
+      .populate("famille", "titlefr")
+      .populate("types");
     let totalCountPromise = Category.countDocuments();
 
     if (req.query.pagination && req.query.pagination.toLowerCase() === "true") {

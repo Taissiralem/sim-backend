@@ -115,15 +115,16 @@ exports.getProductsByCategory = async (req, res) => {
     const { category } = req.params;
     const page = parseInt(req.query.page) || 1;
     const pageSize = 10;
-
     const categoryObjectId = new mongoose.Types.ObjectId(category);
     const products = await Product.find({ category: categoryObjectId })
-      .populate("famille", "title")
-      .populate("category", "title")
-      .populate("type", "title")
+      .populate("famille", "titlefr titleen")
+      .populate("category", "titlefr titleen")
+      .populate("type", "titlefr titleen")
       .skip((page - 1) * pageSize)
       .limit(pageSize)
-      .select("title price description images famille category type");
+      .select(
+        "titlefr titleen price description images famille gamme marque category type"
+      );
 
     const totalCount = await Product.countDocuments({
       category: categoryObjectId,
