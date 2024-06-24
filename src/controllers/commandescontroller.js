@@ -28,11 +28,20 @@ exports.createCommande = async (req, res) => {
 };
 exports.getAllCommandes = async (req, res) => {
   try {
-    const page = req.query.page || 1;
+    const page = parseInt(req.query.page) || 1;
     const pageSize = 10;
-    const totalCount = await Commandes.countDocuments();
+    let filter = {};
+
+    if (
+      req.query.isValid !== undefined &&
+      req.query.isValid !== "" &&
+      req.query.isValid !== "all"
+    ) {
+      filter.isValid = req.query.isValid === "true";
+    }
+    const totalCount = await Commandes.countDocuments(filter);
     const totalPages = Math.ceil(totalCount / pageSize);
-    const commandes = await Commandes.find()
+    const commandes = await Commandes.find(filter)
       .populate("user")
       .populate("product")
       .skip((page - 1) * pageSize)
@@ -44,6 +53,7 @@ exports.getAllCommandes = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch commandes" });
   }
 };
+
 exports.getCommandeById = async (req, res) => {
   try {
     const { id } = req.params;

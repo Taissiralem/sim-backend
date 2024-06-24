@@ -111,10 +111,7 @@ exports.getProductsByCategory = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const pageSize = 10;
 
-    // Convert category to ObjectId
     const categoryObjectId = new mongoose.Types.ObjectId(category);
-
-    // Find products by category with pagination
     const products = await Product.find({ category: categoryObjectId })
       .populate("famille", "title")
       .populate("category", "title")
@@ -123,7 +120,6 @@ exports.getProductsByCategory = async (req, res) => {
       .limit(pageSize)
       .select("title price description images famille category type");
 
-    // Count total number of products in the specified category
     const totalCount = await Product.countDocuments({
       category: categoryObjectId,
     });
