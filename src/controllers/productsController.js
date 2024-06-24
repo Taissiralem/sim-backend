@@ -113,28 +113,22 @@ exports.countProducts = async (req, res) => {
 exports.getProductsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = 10;
+    // Convert category to ObjectId
     const categoryObjectId = new mongoose.Types.ObjectId(category);
+
+    // Find all products by category without pagination
     const products = await Product.find({ category: categoryObjectId })
       .populate("famille", "titlefr titleen")
       .populate("category", "titlefr titleen")
       .populate("type", "titlefr titleen")
-      .skip((page - 1) * pageSize)
-      .limit(pageSize)
-      .select(
+  .select(
         "titlefr titleen price description images famille gamme marque category type"
       );
-
-    const totalCount = await Product.countDocuments({
-      category: categoryObjectId,
-    });
-    const totalPages = Math.ceil(totalCount / pageSize);
-
     // Send response
-    res.status(200).json({ products, totalPages });
+    res.status(200).json({ products });
   } catch (error) {
     console.error("Error fetching products by category:", error);
     res.status(500).json({ error: "Failed to fetch products by category" });
   }
 };
+
