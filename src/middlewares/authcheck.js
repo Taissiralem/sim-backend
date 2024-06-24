@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 
 exports.adminAuthAndRoleCheck = (req, res, next) => {
-  console.log(req.headers.authorization)
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "Authentication failed" });
@@ -36,5 +35,3 @@ exports.userAuthAndRoleCheck = (req, res, next) => {
     return res.status(401).json({ message: "Authentication failed" });
   }
 };
-
-

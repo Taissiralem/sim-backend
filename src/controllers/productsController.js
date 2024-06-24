@@ -53,19 +53,33 @@ exports.updateProductById = async (req, res) => {
 };
 exports.getAllProducts = async (req, res) => {
   try {
-    const page = req.query.page || 1;
+    const { famille, category, type } = req.query;
+    const page = parseInt(req.query.page) || 1;
     const pageSize = 10;
-    const totalCount = await Product.countDocuments();
-    const totalPages = Math.ceil(totalCount / pageSize);
-    const products = await Product.find()
-      .populate("famille", "titlefr titleen")
-      .populate("category", "titlefr titleen")
-      .populate("type", "titlefr titleen")
+    let filter = {};
+    if (famille && famille !== "" && famille !== "all") {
+      filter.famille = famille;
+    }
+    if (category && category !== "" && category !== "all") {
+      filter.category = category;
+    }
+    if (type && type !== "" && type !== "all") {
+      filter.type = type;
+    }
+    const products = await Product.find(filter)
+      .populate("famille", "title")
+      .populate("category", "title")
+      .populate("type", "title")
       .skip((page - 1) * pageSize)
-      .limit(pageSize);
+      .limit(pageSize)
+      .select("title price description images famille category type");
+
+    const totalCount = await Product.countDocuments(filter);
+    const totalPages = Math.ceil(totalCount / pageSize);
+
     res.status(200).json({ products, totalPages });
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching products:", error);
     res.status(500).json({ error: "Failed to fetch products" });
   }
 };
@@ -89,7 +103,7 @@ exports.deleteProductById = async (req, res) => {
     const deletedProduct = await Product.findByIdAndDelete(id);
     deletedProduct.images.forEach((image) => {
       deleteImage(image);
-    })
+    });
     console.log(deletedProduct);
     if (!deletedProduct) {
       return res.status(404).json({ error: "Product not found" });
@@ -121,7 +135,7 @@ exports.getProductsByCategory = async (req, res) => {
       .populate("famille", "titlefr titleen")
       .populate("category", "titlefr titleen")
       .populate("type", "titlefr titleen")
-  .select(
+      .select(
         "titlefr titleen price description images famille gamme marque category type"
       );
     // Send response
@@ -131,4 +145,3 @@ exports.getProductsByCategory = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch products by category" });
   }
 };
-

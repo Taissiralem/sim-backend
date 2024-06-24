@@ -79,7 +79,7 @@ exports.signin = async (req, res) => {
 
 exports.forgotPasswordUser = async (req, res) => {
   const { email } = req.body;
-  console.log(email);
+
   if (!email) {
     res
       .status(400)
