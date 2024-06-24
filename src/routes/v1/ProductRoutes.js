@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const productsController = require("../../controllers/productsController");
 const { multipleImageUpload } = require("../../middlewares/ImageUpload");
-const adminAuthAndRoleCheck = require("../../middlewares/authcheck");
+const {adminAuthAndRoleCheck} = require("../../middlewares/authcheck");
 const router = Router();
 
 router.get("/count", adminAuthAndRoleCheck, productsController.countProducts);

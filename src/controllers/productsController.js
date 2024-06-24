@@ -1,5 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const Product = require("../models/product");
+const { deleteImage } = require("../helpers/cloudinaryUtils");
 
 exports.createProduct = async (req, res) => {
   try {
@@ -86,6 +87,10 @@ exports.deleteProductById = async (req, res) => {
   try {
     const { id } = req.params;
     const deletedProduct = await Product.findByIdAndDelete(id);
+    deletedProduct.images.forEach((image) => {
+      deleteImage(image);
+    })
+    console.log(deletedProduct);
     if (!deletedProduct) {
       return res.status(404).json({ error: "Product not found" });
     }
@@ -108,17 +113,17 @@ exports.countProducts = async (req, res) => {
 exports.getProductsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-
     // Convert category to ObjectId
     const categoryObjectId = new mongoose.Types.ObjectId(category);
 
     // Find all products by category without pagination
     const products = await Product.find({ category: categoryObjectId })
-      .populate("famille", "title")
-      .populate("category", "title")
-      .populate("type", "title")
-      .select("title price description images famille category type");
-
+      .populate("famille", "titlefr titleen")
+      .populate("category", "titlefr titleen")
+      .populate("type", "titlefr titleen")
+  .select(
+        "titlefr titleen price description images famille gamme marque category type"
+      );
     // Send response
     res.status(200).json({ products });
   } catch (error) {
