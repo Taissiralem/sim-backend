@@ -12,7 +12,7 @@ const CommandesSchema = new Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
-    clientName: {
+    client: {
       type: "String",
     },
     phoneNumber: {
