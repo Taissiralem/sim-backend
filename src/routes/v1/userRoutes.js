@@ -7,6 +7,7 @@ const adminAuthAndRoleCheck = require("../../middlewares/authcheck");
 
 // Define routes
 
+router.put("/tour/:userId", userController.updateUserTour);
 // Route to update a user by ID
 router.put("/:id", userController.updateUserById);
 // Route to get users count
