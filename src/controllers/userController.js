@@ -84,7 +84,13 @@ exports.countUsers = async (req, res) => {
 exports.getUserCommandes = async (req, res) => {
   try {
     const userId = req.params.userId;
-    const user = await User.findById(userId).populate("commandes");
+    const user = await User.findById(userId).populate({
+      path: "commandes",
+      populate: {
+        path: "product",
+      },
+    });
+
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
