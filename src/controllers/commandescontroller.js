@@ -4,8 +4,6 @@ exports.createCommande = async (req, res) => {
   try {
     const { quantity, user, product, client, phoneNumber, totalPrice } =
       req.body;
-
-    // Create a new Commande
     const newCommande = new Commandes({
       quantity,
       user,
@@ -14,25 +12,10 @@ exports.createCommande = async (req, res) => {
       phoneNumber,
       totalPrice,
     });
-
-    // Save the new Commande to the database
     const savedCommande = await newCommande.save();
-
-    // Check if the user exists and update their points, commandes, and level
     if (user) {
       const foundUser = await User.findById(user);
       if (foundUser) {
-        const pointsToAdd = totalPrice / 10000;
-        foundUser.level.points += pointsToAdd;
-        if (foundUser.level.points >= 1000) {
-          foundUser.level.name = "diamond";
-        } else if (foundUser.level.points >= 100) {
-          foundUser.level.name = "gold";
-        } else if (foundUser.level.points >= 10) {
-          foundUser.level.name = "silver";
-        } else {
-          foundUser.level.name = "bronze";
-        }
         foundUser.commandes.push(savedCommande._id);
         await foundUser.save();
       }
@@ -105,13 +88,34 @@ exports.ValidateCommandes = async (req, res) => {
     const { id } = req.params;
     const commande = await Commandes.findById(id);
     if (!commande) {
-      return res.status(404).json({ error: "commande not found" });
+      return res.status(404).json({ error: "Commande not found" });
     }
     commande.isValid = !commande.isValid;
-    const ress = await commande.save();
+    if (commande.isValid) {
+      const user = commande.user;
+      if (user) {
+        const foundUser = await User.findById(user);
+        if (foundUser) {
+          const pointsToAdd = commande.totalPrice / 10000;
+          foundUser.level.points += pointsToAdd;
 
+          if (foundUser.level.points >= 1000) {
+            foundUser.level.name = "diamond";
+          } else if (foundUser.level.points >= 100) {
+            foundUser.level.name = "gold";
+          } else if (foundUser.level.points >= 10) {
+            foundUser.level.name = "silver";
+          } else {
+            foundUser.level.name = "bronze";
+          }
+          await foundUser.save();
+        }
+      }
+    }
+    await commande.save();
     res.status(200).json({ message: "Commande validated successfully" });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
 };
