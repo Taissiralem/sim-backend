@@ -1,5 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const Product = require("../models/product");
+const { deleteImage } = require("../helpers/cloudinaryUtils");
 
 exports.createProduct = async (req, res) => {
   try {
@@ -86,6 +87,10 @@ exports.deleteProductById = async (req, res) => {
   try {
     const { id } = req.params;
     const deletedProduct = await Product.findByIdAndDelete(id);
+    deletedProduct.images.forEach((image) => {
+      deleteImage(image);
+    })
+    console.log(deletedProduct);
     if (!deletedProduct) {
       return res.status(404).json({ error: "Product not found" });
     }
