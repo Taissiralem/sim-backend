@@ -67,12 +67,14 @@ exports.getAllProducts = async (req, res) => {
       filter.type = type;
     }
     const products = await Product.find(filter)
-      .populate("famille", "title")
-      .populate("category", "title")
-      .populate("type", "title")
+      .populate("famille", "titlefr titleen")
+      .populate("category", "titlefr titleen")
+      .populate("type", "titlefr titleen")
       .skip((page - 1) * pageSize)
       .limit(pageSize)
-      .select("title price description images famille category type");
+      .select(
+        "titleen titlefr price description images famille category type marque gamme"
+      );
 
     const totalCount = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalCount / pageSize);
