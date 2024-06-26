@@ -25,7 +25,9 @@ exports.imageUpload = (req, res, next) => {
 };
 
 exports.multipleImageUpload = (req, res, next) => {
+  
   upload.array("images", 10)(req, res, (err) => {
+    console.log("req.files", req.files)
     if (err instanceof multer.MulterError) {
       return res.status(400).send("Multer error: " + err.message);
     } else if (err) {
