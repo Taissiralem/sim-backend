@@ -80,6 +80,7 @@ exports.signin = async (req, res) => {
 exports.forgotPasswordUser = async (req, res) => {
   const { email } = req.body;
 
+
   if (!email) {
     res
       .status(400)
@@ -108,7 +109,7 @@ exports.forgotPasswordUser = async (req, res) => {
   const resetToken = new ResetToken({ owner: user._id, token: randomBytes });
   await resetToken.save();
 
-  const url = `http://localhost:5173/passwordForgot?token=${randomBytes}&id=${user._id}`;
+  const url = `http://localhost:5173/passwordReset?token=${randomBytes}&id=${user._id}`;
 
   new SibApiV3Sdk.TransactionalEmailsApi()
     .sendTransacEmail({
@@ -134,20 +135,49 @@ exports.forgotPasswordUser = async (req, res) => {
   });
 };
 
-// resetpassword user
 exports.resetpassword = async (req, res) => {
-  const { password } = req.body;
-  const user = await User.findById(req.user._id);
-  if (!user) return sendError(res, "user not found");
-  const isSame = await user.comparePassword(password);
-  if (isSame) return sendError(res, "New password Must be different");
-  if (password.trim().length < 8 || password.trim().length > 20)
-    return sendError(res, "password must be 8 to 20 caracters");
-  user.password = password.trim();
-  await user.save();
-  await ResetToken.findOneAndDelete({ owner: user._id });
-  res.status(200).json({
-    success: true,
-    message: "Password updated",
-  });
+  try {
+    const { password } = req.body;
+
+    // Find user by ID
+    const user = await User.findById(req.user._id);
+
+    // Check if user exists
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Check if the new password is the same as the old password
+    const isSame = await user.comparePassword(password);
+    if (isSame) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be different from the old password",
+      });
+    }
+
+    // Hash the new password
+    const hashedPassword = bcrypte.hashSync(password.trim(), 10);
+    user.password = hashedPassword;
+
+    // Save the updated user
+    await user.save();
+
+    // Delete any existing reset tokens for the user
+    await ResetToken.findOneAndDelete({ owner: user._id });
+
+    // Respond with success message
+    return res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    // Handle any errors that occur during the process
+    console.error("Error resetting password:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
 };
