@@ -31,6 +31,10 @@ const CommandesSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    num: {
+      type: String,
+      required: true,
+    }
   },
   {
     timestamps: true,

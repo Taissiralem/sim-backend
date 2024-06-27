@@ -1,9 +1,18 @@
+const Counter = require("../models/Counter");
 const Commandes = require("../models/commandes");
 const User = require("../models/user");
 exports.createCommande = async (req, res) => {
   try {
     const { quantity, user, product, client, phoneNumber, totalPrice } =
       req.body;
+
+    const numCommande = await Counter.findOneAndUpdate(
+      { name: "Commandes" },
+      { $inc: { count: 1 } },
+      { new: true }
+    );
+    const today = new Date();
+
     const newCommande = new Commandes({
       quantity,
       user,
@@ -11,6 +20,9 @@ exports.createCommande = async (req, res) => {
       client,
       phoneNumber,
       totalPrice,
+      num: `${String(today.getMonth()+1).padStart(2, "0")}${String(
+        today.getYear() - 100
+      ).padStart(2, "0")}${String(numCommande.count).padStart(4, "0")}`,
     });
     const savedCommande = await newCommande.save();
     if (user) {
@@ -121,7 +133,7 @@ exports.ValidateCommandes = async (req, res) => {
           await foundUser.save();
         }
       }
-    }else{
+    } else {
       const user = commande.user;
       if (user) {
         const foundUser = await User.findById(user);
