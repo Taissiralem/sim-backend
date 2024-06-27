@@ -7,6 +7,8 @@ const connectDB = require("./config/db");
 const morgan = require("morgan");
 const fs = require("fs");
 const path = require("path");
+const { resetPoint } = require("./helpers/nodecron");
+
 
 //init server
 const server = express();
@@ -26,7 +28,10 @@ server.use(morgan("dev", { stream: logStream }));
 
 //require routes
 
+resetPoint.start()
+
 const routes = require("./routes/index");
+
 server.use(routes);
 
 //run server
