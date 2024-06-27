@@ -7,4 +7,5 @@ router.use("/parametres", require("./parametresRoutes"));
 router.use("/products", require("./ProductRoutes"));
 router.use("/commandes", require("./commandesRoutes"));
 router.use("/newsletter", require("./NewsletterRoutes"));
+router.use("/contact", require("./ContactRoutes"));
 module.exports = router;
