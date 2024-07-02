@@ -4,34 +4,33 @@ const { Schema } = mongoose;
 
 const ContactSchema = new Schema(
   {
-    field : {
+    field: {
       type: String,
-      required:true
+      required: true,
     },
     need: {
-        type: String,
-        required:true
+      type: String,
+      required: true,
     },
     name: {
-        type: String,
-        required:true
+      type: String,
+      required: true,
     },
     CompanyName: {
       type: String,
     },
     email: {
       type: String,
-      required:true
+      required: true,
     },
-    country: {
+    wilaya: {
       type: String,
-      required:true
+      required: true,
     },
     message: {
-        type: String,
-        required:true
+      type: String,
+      required: true,
     },
-    
   },
   {
     timestamps: true,
