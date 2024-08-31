@@ -20,9 +20,9 @@ exports.createCommande = async (req, res) => {
       client,
       phoneNumber,
       totalPrice,
-      num: `${String(today.getMonth()+1).padStart(2, "0")}${String(
+      num: `${String(today.getMonth() + 1).padStart(2, "0")}${String(
         today.getYear() - 100
-      ).padStart(2, "0")}${String(numCommande.count).padStart(4, "0")}`,
+      ).padStart(2, "0")}${String(numCommande?.count).padStart(4, "0")}`,
     });
     const savedCommande = await newCommande.save();
     if (user) {
@@ -123,7 +123,7 @@ exports.ValidateCommandes = async (req, res) => {
 
           if (foundUser.level.points >= 1000) {
             foundUser.level.name = "diamond";
-          } else if (foundUser.level.points >= 100) {
+          } else if (foundUser.level.points >= 200) {
             foundUser.level.name = "gold";
           } else if (foundUser.level.points >= 10) {
             foundUser.level.name = "silver";
@@ -176,6 +176,34 @@ exports.PendigCommandesCount = async (req, res) => {
     res.json({ count: CommandesCount });
   } catch (err) {
     console.error("Error counting orders:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.getOrdersByFamily = async (req, res) => {
+  try {
+    const ordersByFamily = await Commandes.aggregate([
+      {
+        $lookup: {
+          from: "products", 
+          localField: "product",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      { $unwind: "$productDetails" },
+      {
+        $group: {
+          _id: "$productDetails.famille",
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    res.status(200).json({ ordersByFamily });
+  } catch (error) {
+    console.error("Error fetching orders by family:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

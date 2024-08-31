@@ -5,7 +5,7 @@ exports.updateUserById = async (req, res) => {
   try {
     const { id } = req.params;
     const { FirstName, LastName, email } = req.body;
-    if(req.authuser.id !== id && req.authuser.role !== "admin") {
+    if (req.authuser.id !== id && req.authuser.role !== "admin") {
       return res.status(401).json({ error: "Unauthorized" });
     }
     // Find the user by ID and update their data
@@ -59,7 +59,7 @@ exports.getAllUsers = async (req, res) => {
 exports.getUserById = async (req, res) => {
   try {
     const { id } = req.params;
-    if(req.authuser.id !== id && req.authuser.role !== "admin") {
+    if (req.authuser.id !== id && req.authuser.role !== "admin") {
       return res.status(401).json({ error: "Unauthorized" });
     }
     // Find the user by ID
@@ -89,7 +89,7 @@ exports.getUserCommandes = async (req, res) => {
   try {
     const userId = req.params.userId;
 
-    if(req.authuser.id !== userId && req.authuser.role !== "admin") {
+    if (req.authuser.id !== userId && req.authuser.role !== "admin") {
       return res.status(401).json({ error: "Unauthorized" });
     }
     const user = await User.findById(userId).populate({
@@ -111,7 +111,7 @@ exports.getUserCommandes = async (req, res) => {
 exports.getUserLevel = async (req, res) => {
   try {
     const userId = req.params.userId;
-    if(req.authuser.id !== userId && req.authuser.role !== "admin") {
+    if (req.authuser.id !== userId && req.authuser.role !== "admin") {
       return res.status(401).json({ error: "Unauthorized" });
     }
     const user = await User.findById(userId);
@@ -130,7 +130,7 @@ exports.getUserLevel = async (req, res) => {
 exports.updateUserTour = async (req, res) => {
   const { userId } = req.params;
   try {
-    if(req.authuser.id !== userId && req.authuser.role !== "admin") {
+    if (req.authuser.id !== userId && req.authuser.role !== "admin") {
       return res.status(401).json({ error: "Unauthorized" });
     }
     const user = await User.findById(userId);
@@ -139,12 +139,20 @@ exports.updateUserTour = async (req, res) => {
     }
     user.tour = true;
     await user.save();
-    return res
-      .status(200)
-      .json({ message: "user tour updated successfully." });
+    return res.status(200).json({ message: "user tour updated successfully." });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
+// Fetch all user levels
+exports.getAllUserLevels = async (req, res) => {
+  try {
+    const users = await User.find({}, "level");
+    const levels = users.map((user) => user.level);
+    res.status(200).json({ levels });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

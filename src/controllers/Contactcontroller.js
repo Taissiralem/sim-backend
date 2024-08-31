@@ -1,7 +1,16 @@
 const Contact = require("../models/Contact");
 exports.createContactMessage = async (req, res) => {
   try {
-    const { email, field, need, name, wilaya, CompanyName, message } = req.body;
+    const {
+      email,
+      field,
+      need,
+      name,
+      wilaya,
+      CompanyName,
+      message,
+      phonenumber,
+    } = req.body;
     const newContact = new Contact({
       field,
       need,
@@ -10,6 +19,7 @@ exports.createContactMessage = async (req, res) => {
       email,
       wilaya,
       message,
+      phonenumber,
     });
 
     const savedContact = await newContact.save();

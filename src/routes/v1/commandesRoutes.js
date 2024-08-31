@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const CommandesController = require("../../controllers/commandescontroller");
-const {adminAuthAndRoleCheck} = require("../../middlewares/authcheck");
+const { adminAuthAndRoleCheck } = require("../../middlewares/authcheck");
 const router = Router();
 router.get(
   "/validate/:id",
@@ -25,5 +25,10 @@ router.delete(
   CommandesController.deleteCommandeById
 );
 router.get("/", adminAuthAndRoleCheck, CommandesController.getAllCommandes);
+router.get(
+  "/getbyfamily",
+  adminAuthAndRoleCheck,
+  CommandesController.getOrdersByFamily
+);
 router.get("/:id", CommandesController.getCommandeById);
 module.exports = router;

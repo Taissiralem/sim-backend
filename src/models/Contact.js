@@ -6,11 +6,9 @@ const ContactSchema = new Schema(
   {
     field: {
       type: String,
-      required: true,
     },
     need: {
       type: String,
-      required: true,
     },
     name: {
       type: String,
@@ -20,6 +18,10 @@ const ContactSchema = new Schema(
       type: String,
     },
     email: {
+      type: String,
+      required: true,
+    },
+    phonenumber: {
       type: String,
       required: true,
     },
