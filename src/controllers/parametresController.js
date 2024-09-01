@@ -1,6 +1,6 @@
-const Category = require("../models/category");
-const Famille = require("../models/famille");
-const Type = require("../models/type");
+const Category = require("../models/category.js");
+const Famille = require("../models/famille.js");
+const Type = require("../models/type.js");
 
 exports.createFamille = async (req, res) => {
   try {

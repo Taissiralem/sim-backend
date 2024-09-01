@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const NewsletterController = require("../../controllers/Newslettercontroller");
-const {adminAuthAndRoleCheck} = require("../../middlewares/authcheck");
+const NewsletterController = require("../../controllers/Newslettercontroller.js");
+const {adminAuthAndRoleCheck} = require("../../middlewares/authcheck.js");
 const router = Router();
 
 router.get("/", adminAuthAndRoleCheck, NewsletterController.getAllNewsletters);

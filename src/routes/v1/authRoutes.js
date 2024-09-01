@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const authcontroller = require("../../controllers/authController");
+const authcontroller = require("../../controllers/authcontroller.js");
 const {
   isResetTokenValidUser,
 } = require("../../middlewares/resetTokenValidation");

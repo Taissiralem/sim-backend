@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const CommandesController = require("../../controllers/commandescontroller");
-const { adminAuthAndRoleCheck } = require("../../middlewares/authcheck");
+const CommandesController = require("../../controllers/commandescontroller.js");
+const { adminAuthAndRoleCheck } = require("../../middlewares/authcheck.js");
 const router = Router();
 router.get(
   "/validate/:id",

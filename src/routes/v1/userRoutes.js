@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 // Import the user controllers
-const userController = require("../../controllers/userController"); // Adjust the path as necessary
+const userController = require("../../controllers/userController.js"); // Adjust the path as necessary
 const {
   adminAuthAndRoleCheck,
   userAuthAndRoleCheck,
-} = require("../../middlewares/authcheck");
+} = require("../../middlewares/authcheck.js");
 
 // Define routes
 

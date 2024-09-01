@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
-const Product = require("../models/product");
-const { deleteImage } = require("../helpers/cloudinaryUtils");
+const Product = require("../models/product.js");
+const { deleteImage } = require("../helpers/cloudinaryUtils.js");
 
 exports.createProduct = async (req, res) => {
   try {

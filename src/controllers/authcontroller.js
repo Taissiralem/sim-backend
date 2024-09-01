@@ -1,10 +1,10 @@
 const User = require("../models/user");
 const bcrypte = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const ResetToken = require("../models/ResetToken");
-const { ResetPassEmail } = require("../helpers/ResetEmalTemplate");
-const { creatRandomBytes } = require("./RandomBytes");
-const SibApiV3Sdk = require("../config/brevo");
+const ResetToken = require("../models/ResetToken.js");
+const { ResetPassEmail } = require("../helpers/ResetEmalTemplate.js");
+const { creatRandomBytes } = require("./RandomBytes.js");
+const SibApiV3Sdk = require("../config/brevo.js");
 exports.signup = async (req, res) => {
   const { FirstName, LastName, email, password } = req.body;
   let existingUser;
@@ -79,7 +79,6 @@ exports.signin = async (req, res) => {
 
 exports.forgotPasswordUser = async (req, res) => {
   const { email } = req.body;
-
 
   if (!email) {
     res

@@ -14,8 +14,8 @@ const {
   countCategories,
   countTypes,
   getFamilleById,
-} = require("../../controllers/parametresController"); // Update with the actual path to your controller file
-const { imageUpload } = require("../../middlewares/ImageUpload");
+} = require("../../controllers/parametresController.js"); // Update with the actual path to your controller file
+const { imageUpload } = require("../../middlewares/ImageUpload.js");
 // Route to create a new famille
 router.post("/famille", createFamille);
 

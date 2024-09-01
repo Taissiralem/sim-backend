@@ -1,4 +1,4 @@
-const User = require("../models/user");
+const User = require("../models/user.js");
 
 // Update a user by ID
 exports.updateUserById = async (req, res) => {

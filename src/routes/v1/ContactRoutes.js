@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const Contactcontroller = require("../../controllers/Contactcontroller");
-const {adminAuthAndRoleCheck} = require("../../middlewares/authcheck");
+const Contactcontroller = require("../../controllers/Contactcontroller.js");
+const {adminAuthAndRoleCheck} = require("../../middlewares/authcheck.js");
 const router = Router();
 
 router.get("/",  Contactcontroller.getAllMessage);

@@ -1,4 +1,4 @@
-const Newsletter = require("../models/Newsletter");
+const Newsletter = require("../models/Newsletter.js");
 exports.createNewsletter = async (req, res) => {
   try {
     const { email } = req.body;

@@ -1,6 +1,6 @@
-const Counter = require("../models/Counter");
-const Commandes = require("../models/commandes");
-const User = require("../models/user");
+const Counter = require("../models/Counter.js");
+const Commandes = require("../models/commandes.js");
+const User = require("../models/user.js");
 exports.createCommande = async (req, res) => {
   try {
     const { quantity, user, product, client, phoneNumber, totalPrice } =
