@@ -108,7 +108,7 @@ exports.forgotPasswordUser = async (req, res) => {
   const resetToken = new ResetToken({ owner: user._id, token: randomBytes });
   await resetToken.save();
 
-  const url = `http://localhost:5173/passwordReset?token=${randomBytes}&id=${user._id}`;
+  const url = `https://symindustrie.com/passwordReset?token=${randomBytes}&id=${user._id}`;
 
   new SibApiV3Sdk.TransactionalEmailsApi()
     .sendTransacEmail({
@@ -124,7 +124,8 @@ exports.forgotPasswordUser = async (req, res) => {
     .then((data) => {
       console.log(data);
     })
-    .catch((error) => {
+    .catch(async (error) => {
+      await resetToken.deleteOne();
       console.error(error);
     });
 
