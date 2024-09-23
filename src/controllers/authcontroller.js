@@ -30,10 +30,7 @@ exports.signup = async (req, res) => {
     await user.save();
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      process.env.JWT_SECRET_KEY,
-      {
-        expiresIn: "18h",
-      }
+      process.env.JWT_SECRET_KEY
     );
     return res
       .status(201)
@@ -64,10 +61,7 @@ exports.signin = async (req, res) => {
   }
   const token = jwt.sign(
     { id: existingUser._id, role: existingUser.role },
-    process.env.JWT_SECRET_KEY,
-    {
-      expiresIn: "3h",
-    }
+    process.env.JWT_SECRET_KEY
   );
 
   return res.status(200).json({
