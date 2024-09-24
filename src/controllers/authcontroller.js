@@ -32,6 +32,13 @@ exports.signup = async (req, res) => {
       { id: user._id, role: user.role },
       process.env.JWT_SECRET_KEY
     );
+
+    res.cookie("token", token, {
+      // httpOnly: true,
+      sameSite: "Lax",
+      maxAge: 31536000000, // 1 year in milliseconds
+    });
+
     return res
       .status(201)
       .json({ message: "Successfully Signed Up and Logged In", user, token });
@@ -63,6 +70,12 @@ exports.signin = async (req, res) => {
     { id: existingUser._id, role: existingUser.role },
     process.env.JWT_SECRET_KEY
   );
+
+  res.cookie("token", token, {
+    // httpOnly: true,
+    sameSite: "Lax",
+    maxAge: 31536000000, // 1 year in milliseconds
+  });
 
   return res.status(200).json({
     message: "Successfully Logged In",
