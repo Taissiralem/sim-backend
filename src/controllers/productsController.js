@@ -36,29 +36,36 @@ exports.createProduct = async (req, res) => {
   }
 };
 exports.updateProductById = async (req, res) => {
-  console.log(req.body)
+  // console.log(req.body);
   try {
-    if(req.body.images) {
-      console.log("req.body.images: ", typeof req.body.images)
-      if(!(Array.isArray(req.body.images))){
-        req.body.images=[req.body.images]
+    if (req.body.images) {
+      console.log("req.body.images: ", typeof req.body.images);
+      if (!Array.isArray(req.body.images)) {
+        req.body.images = [req.body.images];
       }
-    }else{
-      req.body.images=[]
+    } else {
+      req.body.images = [];
     }
     const { id } = req.params;
-    const updatedData = req.imageURLs||[];
-    const final_images = [...(req.body.images), ...updatedData];
-    console.log(...(req.body.images));
-    console.log(req.imageURLs);
+    const updatedData = req.imageURLs || [];
+    const final_images = [...req.body.images, ...updatedData];
+    // console.log(...(req.body.images));
+    // console.log(req.imageURLs);
     const updatedProduct = await Product.findById(id);
-    
 
     if (!updatedProduct) {
       return res.status(404).json({ error: "Product not found" });
     }
-    updatedProduct.images= final_images
-    await updatedProduct.save()
+
+    updatedProduct.images = final_images;
+    await updatedProduct.save();
+    await updatedProduct.updateOne({
+      $set: {
+        ...req.body,
+        images: final_images,
+      },
+    });
+
     res.status(200).json(updatedProduct);
   } catch (error) {
     console.error(error);
