@@ -21,6 +21,7 @@ exports.getAllNewsletters = async (req, res) => {
     const totalCount = await Newsletter.countDocuments();
     const totalPages = Math.ceil(totalCount / pageSize);
     const newsletters = await Newsletter.find()
+      .sort({ createdAt: -1 })
 
       .skip((page - 1) * pageSize)
       .limit(pageSize);
@@ -32,7 +33,6 @@ exports.getAllNewsletters = async (req, res) => {
   }
 };
 
-
 exports.getAllNewslettersCount = async (req, res) => {
   try {
     const totalCount = await Newsletter.countDocuments();
@@ -41,4 +41,4 @@ exports.getAllNewslettersCount = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch newsletters count" });
   }
-}
+};

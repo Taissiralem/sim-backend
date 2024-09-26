@@ -47,6 +47,7 @@ exports.getAllUsers = async (req, res) => {
     const totalCount = await User.countDocuments();
     const totalPages = Math.ceil(totalCount / pageSize);
     const users = await User.find()
+      .sort({ createdAt: -1 })
       .skip((page - 1) * pageSize)
       .limit(pageSize);
     return res.status(200).json({ users, totalPages });

@@ -19,11 +19,7 @@ router.get(
   CommandesController.PendigCommandesCount
 );
 router.post("/create", CommandesController.createCommande);
-router.delete(
-  "/:id",
-  adminAuthAndRoleCheck,
-  CommandesController.deleteCommandeById
-);
+router.delete("/:id", CommandesController.deleteCommandeById);
 router.get("/", adminAuthAndRoleCheck, CommandesController.getAllCommandes);
 router.get(
   "/getbyfamily",

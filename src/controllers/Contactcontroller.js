@@ -37,7 +37,7 @@ exports.getAllMessage = async (req, res) => {
     const totalCount = await Contact.countDocuments();
     const totalPages = Math.ceil(totalCount / pageSize);
     const Contacts = await Contact.find()
-
+      .sort({ createdAt: -1 })
       .skip((page - 1) * pageSize)
       .limit(pageSize);
 

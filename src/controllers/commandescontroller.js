@@ -56,6 +56,7 @@ exports.getAllCommandes = async (req, res) => {
     const commandes = await Commandes.find(filter)
       .populate("user")
       .populate("product")
+      .sort({ createdAt: -1 })
       .skip((page - 1) * pageSize)
       .limit(pageSize);
 
@@ -123,9 +124,9 @@ exports.ValidateCommandes = async (req, res) => {
 
           if (foundUser.level.points >= 1000) {
             foundUser.level.name = "diamond";
-          } else if (foundUser.level.points >= 200) {
+          } else if (foundUser.level.points >= 500) {
             foundUser.level.name = "gold";
-          } else if (foundUser.level.points >= 10) {
+          } else if (foundUser.level.points >= 100) {
             foundUser.level.name = "silver";
           } else {
             foundUser.level.name = "bronze";
@@ -185,7 +186,7 @@ exports.getOrdersByFamily = async (req, res) => {
     const ordersByFamily = await Commandes.aggregate([
       {
         $lookup: {
-          from: "products", 
+          from: "products",
           localField: "product",
           foreignField: "_id",
           as: "productDetails",
