@@ -91,6 +91,7 @@ exports.getAllProducts = async (req, res) => {
       .populate("famille", "titlefr titleen")
       .populate("category", "titlefr titleen")
       .populate("type", "titlefr titleen")
+      .sort({ createdAt: -1 })
       .skip((page - 1) * pageSize)
       .limit(pageSize)
       .select(
