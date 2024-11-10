@@ -101,16 +101,6 @@ exports.forgotPasswordUser = async (req, res) => {
     return;
   }
 
-  const token = await ResetToken.findOne({ owner: user._id });
-  if (token) {
-    // Handle the case where a token already exists
-    res.status(400).json({
-      success: false,
-      message: "Token already exists. Check your email.",
-    });
-    return;
-  }
-
   const randomBytes = await creatRandomBytes();
   const resetToken = new ResetToken({ owner: user._id, token: randomBytes });
   await resetToken.save();
