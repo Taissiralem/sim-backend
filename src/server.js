@@ -16,7 +16,7 @@ const server = express();
 //init cors
 server.use(
   cors({
-    origin: process.env.ORIGIN,
+    origin: "*",
     credentials: true,
   })
 );
