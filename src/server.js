@@ -17,7 +17,6 @@ const server = express();
 server.use(
   cors({
     origin: "*",
-    credentials: true,
   })
 );
 
