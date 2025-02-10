@@ -6,82 +6,103 @@ const { ResetPassEmail } = require("../helpers/ResetEmalTemplate.js");
 const { creatRandomBytes } = require("./RandomBytes.js");
 const SibApiV3Sdk = require("../config/brevo.js");
 exports.signup = async (req, res) => {
-  const { FirstName, LastName, email, password } = req.body;
-  let existingUser;
-  try {
-    existingUser = await User.findOne({ email: email });
-  } catch (err) {
-    console.log(err);
-  }
-  if (existingUser) {
-    return res
-      .status(400)
-      .json({ message: "User already exists! Login instead." });
-  }
-  const hashedPassword = bcrypte.hashSync(password);
-  const user = new User({
-    FirstName,
-    LastName,
-    email,
-    password: hashedPassword,
-  });
+  const { FirstName, LastName, email, password, phoneNumber } = req.body;
 
   try {
+    // Check if email or phone number is already in use
+    const existingUser = await User.findOne({
+      $or: [{ email: email }, { phoneNumber: phoneNumber }],
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        message: "Email or phone number already exists! Login instead.",
+      });
+    }
+
+    // Hash the password
+    const hashedPassword = bcrypte.hashSync(password, 10);
+
+    // Create new user
+    const user = new User({
+      FirstName,
+      LastName,
+      email,
+      password: hashedPassword,
+      phoneNumber,
+    });
+
     await user.save();
+
+    // Generate token
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET_KEY
     );
 
     res.cookie("token", token, {
-      // httpOnly: true,
       sameSite: "Lax",
-      maxAge: 31536000000, // 1 year in milliseconds
+      maxAge: 31536000000, // 1 year
     });
 
-    return res
-      .status(201)
-      .json({ message: "Successfully Signed Up and Logged In", user, token });
+    return res.status(201).json({
+      message: "Successfully Signed Up and Logged In",
+      user,
+      token,
+    });
   } catch (err) {
-    console.log(err);
+    console.error("Signup error:", err);
     return res.status(500).json({ message: "Error during signup" });
   }
 };
+
 exports.signin = async (req, res) => {
-  const { email, password } = req.body;
-  let existingUser;
+  const { identifier, password } = req.body; // Accept either email or phone
+
   try {
-    existingUser = await User.findOne({ email: email });
+    // Check if identifier is an email or phone number
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+    const query = isEmail ? { email: identifier } : { phoneNumber: identifier };
+
+    // Find user by email or phone
+    const existingUser = await User.findOne(query);
+    if (!existingUser) {
+      return res
+        .status(400)
+        .json({ message: "User not found. Please sign up." });
+    }
+
+    // Check if password is correct
+    const isPasswordCorrect = bcrypt.compareSync(
+      password,
+      existingUser.password
+    );
+    if (!isPasswordCorrect) {
+      return res
+        .status(400)
+        .json({ message: "Invalid email/phone or password" });
+    }
+
+    // Generate token
+    const token = jwt.sign(
+      { id: existingUser._id, role: existingUser.role },
+      process.env.JWT_SECRET_KEY
+    );
+
+    res.cookie("token", token, {
+      sameSite: "Lax",
+      maxAge: 31536000000, // 1 year
+    });
+
+    return res.status(200).json({
+      message: "Successfully Logged In",
+      user: existingUser,
+      token,
+    });
   } catch (err) {
-    console.log(err);
-    return new Error(err);
+    console.error("Signin error:", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
-  if (!existingUser) {
-    return res.status(400).json({ message: "User not found. Signup Please" });
-  }
-  const isPasswordCorrect = bcrypte.compareSync(
-    password,
-    existingUser.password
-  );
-  if (!isPasswordCorrect) {
-    return res.status(400).json({ message: "invalid Email / password" });
-  }
-  const token = jwt.sign(
-    { id: existingUser._id, role: existingUser.role },
-    process.env.JWT_SECRET_KEY
-  );
-
-  res.cookie("token", token, {
-    // httpOnly: true,
-    sameSite: "Lax",
-    maxAge: 31536000000, // 1 year in milliseconds
-  });
-
-  return res.status(200).json({
-    message: "Successfully Logged In",
-    user: existingUser,
-    token,
-  });
 };
 
 exports.forgotPasswordUser = async (req, res) => {
