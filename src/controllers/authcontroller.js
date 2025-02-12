@@ -73,7 +73,7 @@ exports.signin = async (req, res) => {
     }
 
     // Check if password is correct
-    const isPasswordCorrect = bcrypt.compareSync(
+    const isPasswordCorrect = bcrypte.compareSync(
       password,
       existingUser.password
     );

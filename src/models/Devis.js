@@ -1,0 +1,40 @@
+const mongoose = require("mongoose");
+
+const { Schema } = mongoose;
+
+const DevisSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+
+    email: {
+      type: String,
+      // required: true,
+    },
+    phoneNumber: {
+      type: String,
+      required: true,
+    },
+    message: {
+      type: String,
+      // required: true,
+    },
+    product: {
+      type: mongoose.Types.ObjectId,
+      ref: "Product",
+    },
+    isValid: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const Devis = mongoose.model("Devis", DevisSchema);
+
+module.exports = Devis;
