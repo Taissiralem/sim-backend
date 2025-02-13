@@ -16,7 +16,7 @@ const server = express();
 //init cors
 server.use(
   cors({
-    origin: "https://www.symindustrie.com", // Replace with the actual frontend URL
+    origin: "http://localhost:5173", // Replace with the actual frontend URL
     credentials: true, // Allow cookies and credentials
   })
 );

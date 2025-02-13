@@ -29,6 +29,11 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    phoneNumber: {
+      type: String,
+      required: true,
+    },
+
     commandes: [
       {
         type: Schema.Types.ObjectId,
