@@ -13,6 +13,12 @@ const productSchema = new Schema(
     price: {
       type: Number,
     },
+    priceRevendeur: {
+      type: Number,
+    },
+    priceGrossiste: {
+      type: Number,
+    },
     description: {
       type: String,
       required: true,

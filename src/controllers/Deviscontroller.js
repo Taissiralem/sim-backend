@@ -60,3 +60,13 @@ exports.deleteDevis = async (req, res) => {
     res.status(500).json({ error: "Failed to delete devis" });
   }
 };
+
+exports.getDevisCount = async (req, res) => {
+  try {
+    const totalCount = await Devis.countDocuments();
+    res.status(200).json({ totalCount });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch devis count" });
+  }
+};
