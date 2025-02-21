@@ -8,6 +8,8 @@ exports.createProduct = async (req, res) => {
       titlefr,
       titleen,
       price,
+      priceRevendeur,
+      priceGrossiste,
       description,
       famille,
       category,
@@ -20,6 +22,8 @@ exports.createProduct = async (req, res) => {
       titlefr,
       titleen,
       price,
+      priceRevendeur,
+      priceGrossiste,
       description,
       famille,
       category,
@@ -95,7 +99,7 @@ exports.getAllProducts = async (req, res) => {
       .skip((page - 1) * pageSize)
       .limit(pageSize)
       .select(
-        "titleen titlefr price description images famille category type marque gamme"
+        "titleen titlefr price priceRevendeur priceGrossiste description images famille category type marque gamme"
       );
 
     const totalCount = await Product.countDocuments(filter);

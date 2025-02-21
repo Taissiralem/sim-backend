@@ -22,7 +22,7 @@ const DevisSchema = new Schema(
       // required: true,
     },
     product: {
-      type: mongoose.Types.ObjectId,
+      type: String,
       ref: "Product",
     },
     isValid: {

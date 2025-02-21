@@ -4,6 +4,7 @@ const router = Router();
 
 router.post("/", DevisController.createDevis);
 router.get("/", DevisController.getDevis);
+router.get("/count", DevisController.getDevisCount);
 router.get("/:id", DevisController.getDevisById);
 router.put("/:id", DevisController.updateDevis);
 router.delete("/:id", DevisController.deleteDevis);

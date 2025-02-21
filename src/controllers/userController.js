@@ -1,30 +1,5 @@
 const User = require("../models/user.js");
 
-// Update a user by ID
-exports.updateUserById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { FirstName, LastName, email } = req.body;
-    if (req.authuser.id !== id && req.authuser.role !== "admin") {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-    // Find the user by ID and update their data
-    const user = await User.findByIdAndUpdate(
-      id,
-      { FirstName, LastName, email },
-      { new: true }
-    );
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
 // Delete a user by ID
 exports.deleteUserById = async (req, res) => {
   try {
@@ -153,6 +128,114 @@ exports.getAllUserLevels = async (req, res) => {
     const users = await User.find({}, "level");
     const levels = users.map((user) => user.level);
     res.status(200).json({ levels });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.attributeUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { type } = req.body;
+
+    if (!type) {
+      return res.status(400).json({ error: "Type is required" });
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    user.pendingType = type; // On met à jour la demande d'attribution
+    await user.save();
+    res.status(200).json({ message: "Attribution request sent successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.validateAttribution = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { validate } = req.body;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!user.pendingType) {
+      return res.status(400).json({ error: "No pending attribution request" });
+    }
+
+    if (validate) {
+      user.type = user.pendingType;
+      user.pendingType = null;
+    } else {
+      user.pendingType = null;
+    }
+
+    await user.save();
+
+    res
+      .status(200)
+      .json({ message: "Attribution request processed successfully", user });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Update a user by ID
+exports.updateUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { FirstName, LastName, email } = req.body;
+    if (req.authuser.id !== id && req.authuser.role !== "admin") {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    // Find the user by ID and update their data
+    const user = await User.findByIdAndUpdate(
+      id,
+      { FirstName, LastName, email },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// get all users with pending type
+exports.getAllUsersWithPendingType = async (req, res) => {
+  try {
+    const users = await User.find({
+      pendingType: { $exists: true, $ne: null },
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.addCodeClient = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { code } = req.body;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    console.log(id, req.body, code, user);
+    user.code = code;
+    await user.save();
+    res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

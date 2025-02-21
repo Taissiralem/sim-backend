@@ -31,7 +31,7 @@ const userSchema = new Schema(
     },
     phoneNumber: {
       type: String,
-      required: true,
+      // required: true,
     },
 
     commandes: [
@@ -49,6 +49,18 @@ const userSchema = new Schema(
         type: Number,
         default: 0,
       },
+    },
+    type: {
+      type: String,
+      default: "client",
+    },
+    pendingType: {
+      type: String,
+      default: null,
+    },
+    code: {
+      type: String,
+      default: null,
     },
   },
   {
