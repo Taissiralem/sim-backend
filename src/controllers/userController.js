@@ -1,4 +1,5 @@
 const User = require("../models/user.js");
+const Commandes = require("../models/commandes.js");
 
 // Delete a user by ID
 exports.deleteUserById = async (req, res) => {
@@ -65,25 +66,30 @@ exports.getUserCommandes = async (req, res) => {
   try {
     const userId = req.params.userId;
 
+    // Vérification de l'autorisation
     if (req.authuser.id !== userId && req.authuser.role !== "admin") {
       return res.status(401).json({ error: "Unauthorized" });
     }
-    const user = await User.findById(userId).populate({
-      path: "commandes",
-      populate: {
-        path: "product",
-      },
-    });
 
+    // Vérifier si l'utilisateur existe
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    res.status(200).json(user.commandes);
+
+    // Récupérer les commandes de l'utilisateur avec la relation correcte
+    const commandes = await Commandes.find({ user: userId }).populate({
+      path: "products.product",
+      model: "Product", // S'assurer que Mongoose utilise le bon modèle
+    });
+
+    res.status(200).json(commandes);
   } catch (error) {
-    console.error(error);
+    console.error("Erreur lors de la récupération des commandes de l'utilisateur:", error);
     res.status(500).json({ error: "Failed to retrieve user commandes" });
   }
 };
+
 exports.getUserLevel = async (req, res) => {
   try {
     const userId = req.params.userId;

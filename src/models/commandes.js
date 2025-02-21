@@ -4,10 +4,6 @@ const { Schema } = mongoose;
 
 const CommandesSchema = new Schema(
   {
-    quantity: {
-      type: Number,
-      default: 1,
-    },
     user: {
       type: mongoose.Types.ObjectId,
       ref: "User",
@@ -18,12 +14,24 @@ const CommandesSchema = new Schema(
     phoneNumber: {
       type: String,
     },
-    product: {
-      type: mongoose.Types.ObjectId,
-      ref: "Product",
-      required: true,
-    },
-    totalPrice: {
+    products: [
+      {
+        product: {
+          type: mongoose.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          default: 1,
+        },
+        totalPrice: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
+    totalOrderPrice: {
       type: Number,
       required: true,
     },
@@ -34,7 +42,7 @@ const CommandesSchema = new Schema(
     num: {
       type: String,
       required: true,
-    }
+    },
   },
   {
     timestamps: true,
