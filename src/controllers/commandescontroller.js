@@ -3,28 +3,40 @@ const Commandes = require("../models/commandes.js");
 const User = require("../models/user.js");
 exports.createCommande = async (req, res) => {
   try {
-    const { quantity, user, product, client, phoneNumber, totalPrice } =
-      req.body;
+    const { user, client, phoneNumber, products } = req.body;
+    console.log("Requête reçue:", req.body);
+    if (!products || products.length === 0) {
+      return res.status(400).json({ error: "Aucun produit sélectionné" });
+    }
+
+    // Calculer le prix total de la commande
+    const totalOrderPrice = products.reduce(
+      (acc, item) => acc + item.totalPrice,
+      0
+    );
 
     const numCommande = await Counter.findOneAndUpdate(
       { name: "Commandes" },
       { $inc: { count: 1 } },
       { new: true }
     );
+
     const today = new Date();
+    const num = `${String(today.getMonth() + 1).padStart(2, "0")}${String(
+      today.getYear() - 100
+    ).padStart(2, "0")}${String(numCommande?.count).padStart(4, "0")}`;
 
     const newCommande = new Commandes({
-      quantity,
       user,
-      product,
       client,
       phoneNumber,
-      totalPrice,
-      num: `${String(today.getMonth() + 1).padStart(2, "0")}${String(
-        today.getYear() - 100
-      ).padStart(2, "0")}${String(numCommande?.count).padStart(4, "0")}`,
+      products,
+      totalOrderPrice,
+      num,
     });
+
     const savedCommande = await newCommande.save();
+
     if (user) {
       const foundUser = await User.findById(user);
       if (foundUser) {
@@ -32,10 +44,11 @@ exports.createCommande = async (req, res) => {
         await foundUser.save();
       }
     }
+
     res.status(201).json(savedCommande);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to create commande" });
+    res.status(500).json({ error: "Échec de la création de la commande" });
   }
 };
 exports.getAllCommandes = async (req, res) => {
@@ -51,37 +64,43 @@ exports.getAllCommandes = async (req, res) => {
     ) {
       filter.isValid = req.query.isValid === "true";
     }
+
     const totalCount = await Commandes.countDocuments(filter);
     const totalPages = Math.ceil(totalCount / pageSize);
+
     const commandes = await Commandes.find(filter)
       .populate("user")
-      .populate("product")
+      .populate("products.product")
       .sort({ createdAt: -1 })
       .skip((page - 1) * pageSize)
       .limit(pageSize);
 
-    res.status(200).json({ commandes, totalPages });
+    res.status(200).json({ commandes, totalPages, currentPage: page });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to fetch commandes" });
+    console.error("Erreur lors de la récupération des commandes:", error);
+    res.status(500).json({ error: "Échec de la récupération des commandes" });
   }
 };
 
 exports.getCommandeById = async (req, res) => {
   try {
     const { id } = req.params;
-    const commandes = await Commandes.findById(id)
+
+    const commande = await Commandes.find(id)
       .populate("user")
-      .populate("product");
-    if (!commandes) {
-      return res.status(404).json({ error: "Commandes not found" });
+      .populate("products.product"); // Ensure the path matches your schema
+
+    if (!commande) {
+      return res.status(404).json({ error: "Commande introuvable" });
     }
-    res.status(200).json(commandes);
+
+    res.status(200).json(commande);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to fetch commmandes" });
+    console.error("Erreur lors de la récupération de la commande:", error);
+    res.status(500).json({ error: "Échec de la récupération de la commande" });
   }
 };
+
 
 exports.deleteCommandeById = async (req, res) => {
   try {
@@ -184,10 +203,11 @@ exports.PendigCommandesCount = async (req, res) => {
 exports.getOrdersByFamily = async (req, res) => {
   try {
     const ordersByFamily = await Commandes.aggregate([
+      { $unwind: "$products" },
       {
         $lookup: {
           from: "products",
-          localField: "product",
+          localField: "products.product",
           foreignField: "_id",
           as: "productDetails",
         },
@@ -204,7 +224,8 @@ exports.getOrdersByFamily = async (req, res) => {
 
     res.status(200).json({ ordersByFamily });
   } catch (error) {
-    console.error("Error fetching orders by family:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Erreur lors de la récupération des commandes par famille:", error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
   }
 };
+

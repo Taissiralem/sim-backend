@@ -8,6 +8,7 @@ router.use("/products", require("./ProductRoutes"));
 router.use("/commandes", require("./commandesRoutes"));
 router.use("/newsletter", require("./NewsletterRoutes"));
 router.use("/contact", require("./ContactRoutes"));
+router.use("/cart", require("./cartRoutes"));
 router.use("/devis", require("./DevisRoutes"));
 //
 module.exports = router;
