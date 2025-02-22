@@ -101,7 +101,6 @@ exports.getCommandeById = async (req, res) => {
   }
 };
 
-
 exports.deleteCommandeById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -138,7 +137,7 @@ exports.ValidateCommandes = async (req, res) => {
       if (user) {
         const foundUser = await User.findById(user);
         if (foundUser) {
-          const pointsToAdd = commande.totalPrice / 10000;
+          const pointsToAdd = commande.totalOrderPrice / 10000;
           foundUser.level.points += pointsToAdd;
 
           if (foundUser.level.points >= 1000) {
@@ -158,7 +157,7 @@ exports.ValidateCommandes = async (req, res) => {
       if (user) {
         const foundUser = await User.findById(user);
         if (foundUser) {
-          const pointsToAdd = commande.totalPrice / 10000;
+          const pointsToAdd = commande.totalOrderPrice / 10000;
           foundUser.level.points -= pointsToAdd;
 
           if (foundUser.level.points >= 1000) {
@@ -224,8 +223,10 @@ exports.getOrdersByFamily = async (req, res) => {
 
     res.status(200).json({ ordersByFamily });
   } catch (error) {
-    console.error("Erreur lors de la récupération des commandes par famille:", error);
+    console.error(
+      "Erreur lors de la récupération des commandes par famille:",
+      error
+    );
     res.status(500).json({ error: "Erreur interne du serveur" });
   }
 };
-
