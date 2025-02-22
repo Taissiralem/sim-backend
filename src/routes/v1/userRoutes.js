@@ -33,8 +33,28 @@ router.get("/levels", adminAuthAndRoleCheck, userController.getAllUserLevels);
 router.delete("/:id", adminAuthAndRoleCheck, userController.deleteUserById);
 // Route to fetch all users
 router.get("/", adminAuthAndRoleCheck, userController.getAllUsers);
+router.get(
+  "/pendingType",
+  adminAuthAndRoleCheck,
+  userController.getAllUsersWithPendingType
+);
+router.put(
+  "/add-code-client/:id",
+  adminAuthAndRoleCheck,
+  userController.addCodeClient
+);
+
 // Route to fetch a user by ID
 router.get("/:id", userAuthAndRoleCheck, userController.getUserById);
+// Route to attribute a user
+router.put("/type/:id", userAuthAndRoleCheck, userController.attributeUser);
+// Route to validate attribution
+router.put(
+  "/validate-attribution/:id",
+  adminAuthAndRoleCheck,
+  userController.validateAttribution
+);
+// Route to add a code client
 
 // Export the router
 module.exports = router;
