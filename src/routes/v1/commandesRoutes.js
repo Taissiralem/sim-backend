@@ -1,10 +1,7 @@
 const { Router } = require("express");
 const CommandesController = require("../../controllers/commandescontroller.js");
 const { adminAuthAndRoleCheck } = require("../../middlewares/authcheck.js");
-const {
-  imageUpload,
-  multipleImageUpload,
-} = require("../../middlewares/imageUpload.js");
+const { imageUpload } = require("../../middlewares/ImageUpload.js");
 const router = Router();
 router.get(
   "/validate/:id",
