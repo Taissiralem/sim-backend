@@ -5,6 +5,7 @@ const cloudinary = require("../config/cloudinaryConfig");
 exports.imageUpload = (req, res, next) => {
   upload.single("image")(req, res, (err) => {
     if (err instanceof multer.MulterError) {
+      console.log(err);
       return res.status(400).send("Multer error: " + err.message);
     } else if (err) {
       return res.status(500).send("Error: " + err.message);
@@ -25,9 +26,8 @@ exports.imageUpload = (req, res, next) => {
 };
 
 exports.multipleImageUpload = (req, res, next) => {
-  
   upload.array("images", 10)(req, res, (err) => {
-    console.log("req.files", req.files)
+    console.log("req.files", req.files);
     if (err instanceof multer.MulterError) {
       return res.status(400).send("Multer error: " + err.message);
     } else if (err) {

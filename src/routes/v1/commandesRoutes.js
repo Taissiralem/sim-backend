@@ -1,6 +1,10 @@
 const { Router } = require("express");
 const CommandesController = require("../../controllers/commandescontroller.js");
 const { adminAuthAndRoleCheck } = require("../../middlewares/authcheck.js");
+const {
+  imageUpload,
+  multipleImageUpload,
+} = require("../../middlewares/imageUpload.js");
 const router = Router();
 router.get(
   "/validate/:id",
@@ -19,7 +23,17 @@ router.get(
   CommandesController.PendigCommandesCount
 );
 router.post("/create", CommandesController.createCommande);
-router.delete("/:id", CommandesController.deleteCommandeById);
+router.put(
+  "/addfile/:id",
+  adminAuthAndRoleCheck,
+  imageUpload,
+  CommandesController.addFiletoCommande
+);
+router.delete(
+  "/:id",
+  adminAuthAndRoleCheck,
+  CommandesController.deleteCommandeById
+);
 router.get("/", adminAuthAndRoleCheck, CommandesController.getAllCommandes);
 router.get(
   "/getbyfamily",

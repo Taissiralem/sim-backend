@@ -230,3 +230,27 @@ exports.getOrdersByFamily = async (req, res) => {
     res.status(500).json({ error: "Erreur interne du serveur" });
   }
 };
+
+exports.addFiletoCommande = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const image = req.image;
+    const commande = await Commandes.findById(id);
+    if (!commande) {
+      return res.status(404).json({ error: "Commande not found" });
+    }
+
+    if (image) {
+      commande.file = image; // Adjust path based on storage settings
+      await commande.save();
+      res
+        .status(200)
+        .json({ message: "File uploaded successfully", file: commande.file });
+    } else {
+      res.status(400).json({ error: "No file provided" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
