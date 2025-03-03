@@ -1,6 +1,8 @@
 const User = require("../models/user.js");
 const Commandes = require("../models/commandes.js");
-
+const Devis = require("../models/Devis.js");
+const SibApiV3Sdk = require("../config/brevo.js");
+const { ConfirmAccountEmail } = require("../helpers/AttributedAccount.js");
 // Delete a user by ID
 exports.deleteUserById = async (req, res) => {
   try {
@@ -85,8 +87,38 @@ exports.getUserCommandes = async (req, res) => {
 
     res.status(200).json(commandes);
   } catch (error) {
-    console.error("Erreur lors de la récupération des commandes de l'utilisateur:", error);
+    console.error(
+      "Erreur lors de la récupération des commandes de l'utilisateur:",
+      error
+    );
     res.status(500).json({ error: "Failed to retrieve user commandes" });
+  }
+};
+exports.getUserDevis = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Vérification de l'autorisation
+    if (req.authuser.id !== userId && req.authuser.role !== "admin") {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    // Vérifier si l'utilisateur existe
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Récupérer les commandes de l'utilisateur avec la relation correcte
+    const devis = await Devis.find({ user: userId });
+
+    res.status(200).json(devis);
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des commandes de l'utilisateur:",
+      error
+    );
+    res.status(500).json({ error: "Failed to retrieve user commandes", error });
   }
 };
 
@@ -142,10 +174,12 @@ exports.getAllUserLevels = async (req, res) => {
 exports.attributeUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { type } = req.body;
+    const { type, entreprise, RC, adresse } = req.body;
 
-    if (!type) {
-      return res.status(400).json({ error: "Type is required" });
+    if (!type || !RC || !adresse) {
+      return res
+        .status(400)
+        .json({ error: "Type, RC and adresse are required" });
     }
 
     const user = await User.findById(id);
@@ -153,9 +187,17 @@ exports.attributeUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    user.pendingType = type; // On met à jour la demande d'attribution
+
+    user.pendingType = type;
+    user.pendingEntreprise = entreprise;
+    user.pendingRC = RC;
+    user.pendingAdresse = adresse;
     await user.save();
-    res.status(200).json({ message: "Attribution request sent successfully" });
+
+    res.status(200).json({
+      success: true,
+      message: "Attribution request sent successfully.",
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -178,9 +220,31 @@ exports.validateAttribution = async (req, res) => {
 
     if (validate) {
       user.type = user.pendingType;
+      user.entreprise = user.pendingEntreprise;
+      user.RC = user.pendingRC;
+      user.adresse = user.pendingAdresse;
+
       user.pendingType = null;
+      user.pendingEntreprise = null;
+      user.pendingAdresse = null;
+      user.pendingRC = null;
     } else {
       user.pendingType = null;
+      user.pendingEntreprise = null;
+      user.pendingAdresse = null;
+      user.pendingRC = null;
+    }
+    try {
+      await new SibApiV3Sdk.TransactionalEmailsApi().sendTransacEmail({
+        sender: { email: "industrie.sym@gmail.com", name: "Sym Industry" },
+        subject: "Compte Validé",
+        htmlContent: ConfirmAccountEmail(user.type),
+        to: [{ email: user.email }],
+      });
+      console.log("Email sent successfully");
+    } catch (error) {
+      console.error("Error sending email:", error);
+      return res.status(500).json({ error: "Failed to send email" });
     }
 
     await user.save();
@@ -234,11 +298,17 @@ exports.addCodeClient = async (req, res) => {
   try {
     const { id } = req.params;
     const { code } = req.body;
+    const existingUser = await User.findOne({ code });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ error: "Code is already assigned to another user" });
+    }
+
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    console.log(id, req.body, code, user);
     user.code = code;
     await user.save();
     res.status(200).json(user);

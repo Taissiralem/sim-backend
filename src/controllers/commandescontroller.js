@@ -245,7 +245,11 @@ exports.addFiletoCommande = async (req, res) => {
       await commande.save();
       res
         .status(200)
-        .json({ message: "File uploaded successfully", file: commande.file });
+        .json({
+          message: "File uploaded successfully",
+          file: commande.file,
+          commande,
+        });
     } else {
       res.status(400).json({ error: "No file provided" });
     }

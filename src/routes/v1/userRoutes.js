@@ -25,6 +25,7 @@ router.get(
   userAuthAndRoleCheck,
   userController.getUserCommandes
 );
+router.get("/devis/:userId", userAuthAndRoleCheck, userController.getUserDevis);
 // Route to fetch user level infos
 router.get("/level/:userId", userAuthAndRoleCheck, userController.getUserLevel);
 // Route to fetch all user levels

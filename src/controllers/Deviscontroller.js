@@ -15,7 +15,7 @@ exports.createDevis = async (req, res) => {
     res.status(201).json(savedDevis);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to create commande" });
+    res.status(500).json({ error: "Failed to create devis" });
   }
 };
 
@@ -37,19 +37,7 @@ exports.getDevisById = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "Failed to get devis" });
   }
-};
-
-exports.updateDevis = async (req, res) => {
-  try {
-    const devis = await Devis.findByIdAndUpdate(req.params.id, {
-      isValid: !req.body.isValid,
-    });
-    res.status(200).json(devis);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to update devis" });
-  }
-};
+};  
 
 exports.deleteDevis = async (req, res) => {
   try {
@@ -70,3 +58,71 @@ exports.getDevisCount = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch devis count" });
   }
 };
+
+exports.addFiletoDevis = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const image = req.image;
+    const devis = await Devis.findById(id);
+    if (!devis) {
+      return res.status(404).json({ error: "Devis not found" });
+    }
+
+    if (image) {
+      devis.file = image; // Adjust path based on storage settings
+      await devis.save();
+      res.status(200).json({
+        message: "File uploaded successfully",
+        file: devis.file,
+        devis,
+      });
+    } else {
+      res.status(400).json({ error: "No file provided" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.removeFileFromDevis = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const devis = await Devis.findById(id);
+    if (!devis) {
+      return res.status(404).json({ error: "Devis not found" });
+    }
+
+    if (devis.file) {
+      devis.file = undefined;
+      devis.isValid = false;
+      await devis.save();
+      res.status(200).json({
+        message: "File removed successfully",
+        devis,
+      });
+    } else {
+      res.status(400).json({ error: "No file to remove" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.updateDevis = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const devis = await Devis.findById(id);
+    if (!devis) {
+      return res.status(404).json({ error: "Devis not found" });
+    }
+
+    devis.isValid = req.body.isValid;
+    await devis.save();
+    res.status(200).json(devis);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+

@@ -50,13 +50,38 @@ const userSchema = new Schema(
         default: 0,
       },
     },
-    type: {
-      type: String,
-      default: "client",
-    },
+
     pendingType: {
       type: String,
       default: null,
+    },
+    pendingEntreprise: {
+      type: String,
+      default: null,
+    },
+    pendingRC: {
+      type: String,
+      default: null,
+    },
+    pendingAdresse: {
+      type: String,
+      default: null,
+    },
+    entreprise: {
+      type: String,
+      default: null,
+    },
+    RC: {
+      type: String,
+      default: null,
+    },
+    adresse: {
+      type: String,
+      default: null,
+    },
+    type: {
+      type: String,
+      default: "client",
     },
     code: {
       type: String,
