@@ -1,7 +1,10 @@
 const { Router } = require("express");
 const CommandesController = require("../../controllers/commandescontroller.js");
 const { adminAuthAndRoleCheck } = require("../../middlewares/authcheck.js");
-const { imageUpload } = require("../../middlewares/ImageUpload.js");
+const {
+  imageUpload,
+  imageUpload2,
+} = require("../../middlewares/ImageUpload.js");
 const router = Router();
 router.get(
   "/validate/:id",
@@ -23,7 +26,7 @@ router.post("/create", CommandesController.createCommande);
 router.put(
   "/addfile/:id",
   adminAuthAndRoleCheck,
-  imageUpload,
+  imageUpload2,
   CommandesController.addFiletoCommande
 );
 router.delete(

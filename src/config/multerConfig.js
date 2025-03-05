@@ -6,10 +6,13 @@ const storage = multer.diskStorage({});
 const upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
-    if (!file.mimetype.startsWith("image/")) {
-      return cb(new Error("Only image files are allowed!"), false);
+    if (
+      file.mimetype.startsWith("image/") ||
+      file.mimetype.endsWith("pdf") ||
+      file.mimetype.includes("word")
+    ) {
+      return cb(null, true);
     }
-    cb(null, true);
   },
 });
 

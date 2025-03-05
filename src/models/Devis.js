@@ -29,6 +29,9 @@ const DevisSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    file: {
+      type: String,
+    },
   },
   {
     timestamps: true,

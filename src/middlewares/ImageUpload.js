@@ -52,3 +52,36 @@ exports.multipleImageUpload = (req, res, next) => {
     });
   });
 };
+
+exports.imageUpload2 = (req, res, next) => {
+  upload.single("image")(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      console.log(err);
+      return res.status(400).send("Multer error: " + err.message);
+    } else if (err) {
+      return res.status(500).send("Error: " + err.message);
+    }
+
+    if (req.file) {
+      // Check file type and set resource_type accordingly
+      const resourceType = req.file.mimetype.startsWith("image/")
+        ? "image"
+        : "raw"; // 'raw' is for non-image files (PDF, Word, etc.)
+
+      cloudinary.uploader.upload(
+        req.file.path,
+        { resource_type: resourceType }, // Specify resource_type
+        (error, result) => {
+          if (error) {
+            console.error(error);
+            return res.status(500).send("Error uploading file to Cloudinary");
+          }
+          req.image = result.secure_url;
+          return next();
+        }
+      );
+    } else {
+      return res.status(400).send("No file provided.");
+    }
+  });
+};
