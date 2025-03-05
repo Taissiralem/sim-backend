@@ -46,6 +46,10 @@ const CommandesSchema = new Schema(
     file: {
       type: String,
     },
+    adresse: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

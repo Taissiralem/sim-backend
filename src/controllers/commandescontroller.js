@@ -3,7 +3,7 @@ const Commandes = require("../models/commandes.js");
 const User = require("../models/user.js");
 exports.createCommande = async (req, res) => {
   try {
-    const { user, client, phoneNumber, products } = req.body;
+    const { user, client, phoneNumber, products, adresse } = req.body;
     console.log("Requête reçue:", req.body);
     if (!products || products.length === 0) {
       return res.status(400).json({ error: "Aucun produit sélectionné" });
@@ -33,6 +33,7 @@ exports.createCommande = async (req, res) => {
       products,
       totalOrderPrice,
       num,
+      adresse,
     });
 
     const savedCommande = await newCommande.save();
@@ -243,13 +244,11 @@ exports.addFiletoCommande = async (req, res) => {
     if (image) {
       commande.file = image; // Adjust path based on storage settings
       await commande.save();
-      res
-        .status(200)
-        .json({
-          message: "File uploaded successfully",
-          file: commande.file,
-          commande,
-        });
+      res.status(200).json({
+        message: "File uploaded successfully",
+        file: commande.file,
+        commande,
+      });
     } else {
       res.status(400).json({ error: "No file provided" });
     }
