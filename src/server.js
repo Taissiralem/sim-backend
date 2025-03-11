@@ -21,6 +21,7 @@ server.use(
         "http://localhost:5173",
         "https://symindustrie.com",
         "https://www.symindustrie.com",
+        /\.symindustrie\.com$/, // Dynamic subdomain
       ];
 
       if (!origin || allowedOrigins.includes(origin)) {
