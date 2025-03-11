@@ -16,8 +16,21 @@ const server = express();
 //init cors
 server.use(
   cors({
-    origin: "http://localhost:5173", // Replace with the actual frontend URL
-    credentials: true, // Allow cookies and credentials
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "https://symindustrie.com",
+        "https://www.symindustrie.com",
+      ];
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
