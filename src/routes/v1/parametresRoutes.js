@@ -14,6 +14,8 @@ const {
   countCategories,
   countTypes,
   getFamilleById,
+  editCategory,
+  getCategoryById,
 } = require("../../controllers/parametresController.js"); // Update with the actual path to your controller file
 const { imageUpload } = require("../../middlewares/ImageUpload.js");
 // Route to create a new famille
@@ -39,6 +41,12 @@ router.get("/famille/:famillId", getFamilleById);
 
 // Route to delete a famille by ID
 router.delete("/famille/:id", deleteFamille);
+
+// Route to update a category by ID
+router.put("/category/:id", imageUpload, editCategory);
+
+// Route to get category by ID
+router.get("/category/:id", getCategoryById);
 
 // Route to delete a category by ID
 router.delete("/category/:id", deleteCategory);

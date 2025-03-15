@@ -34,6 +34,22 @@ exports.createCategory = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.editCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { titlefr, titleen } = req.body;
+    const image = req.image;
+    const category = await Category.findById(id);
+    if (!category) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+    category.titlefr = titlefr;
+    category.titleen = titleen;
+    category.image = image;
+    await category.save();
+    res.status(200).json(category);
+  } catch (error) {}
+};
 
 exports.createType = async (req, res) => {
   try {
@@ -89,8 +105,8 @@ exports.getFamilleById = async (req, res) => {
 // get categori by id
 exports.getCategoryById = async (req, res) => {
   try {
-    const { categoryId } = req.params;
-    const category = await Category.findById(categoryId).populate("types");
+    const { id } = req.params;
+    const category = await Category.findById(id);
     if (!category) {
       return res.status(404).json({ error: "Category not found" });
     }
@@ -128,7 +144,12 @@ exports.getAllTypes = async (req, res) => {
   try {
     const page = req.query.page || 1;
     const pageSize = 10;
-    let query = Type.find().populate("category");
+    let query = Type.find().populate({
+      path: "category",
+      populate: {
+        path: "famille", // Populate the famille field inside category
+      },
+    });
     let totalCountPromise = Type.countDocuments();
 
     if (req.query.pagination && req.query.pagination.toLowerCase() === "true") {
@@ -145,6 +166,7 @@ exports.getAllTypes = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 exports.deleteType = async (req, res) => {
   try {
     const { id } = req.params;
@@ -202,6 +224,6 @@ exports.countCategories = async (req, res) => {
     const count = await Category.countDocuments();
     res.status(200).json({ count });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error, COUNT: "ERROR" });
   }
 };

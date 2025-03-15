@@ -40,6 +40,12 @@ const userSchema = new Schema(
         ref: "Commandes",
       },
     ],
+    devis: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Devis",
+      },
+    ],
     level: {
       name: {
         type: String,

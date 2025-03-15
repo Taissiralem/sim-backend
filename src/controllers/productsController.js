@@ -40,7 +40,6 @@ exports.createProduct = async (req, res) => {
   }
 };
 exports.updateProductById = async (req, res) => {
-  // console.log(req.body);
   try {
     if (req.body.images) {
       console.log("req.body.images: ", typeof req.body.images);
@@ -53,10 +52,7 @@ exports.updateProductById = async (req, res) => {
     const { id } = req.params;
     const updatedData = req.imageURLs || [];
     const final_images = [...req.body.images, ...updatedData];
-    // console.log(...(req.body.images));
-    // console.log(req.imageURLs);
     const updatedProduct = await Product.findById(id);
-
     if (!updatedProduct) {
       return res.status(404).json({ error: "Product not found" });
     }
@@ -167,7 +163,7 @@ exports.getProductsByCategory = async (req, res) => {
       .populate("category", "titlefr titleen")
       .populate("type", "titlefr titleen")
       .select(
-        "titlefr titleen price description images famille gamme marque category type"
+        "titlefr titleen price priceRevendeur priceGrossiste description images famille gamme marque category type"
       );
     // Send response
     res.status(200).json({ products });

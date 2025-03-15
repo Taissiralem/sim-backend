@@ -4,6 +4,10 @@ const { Schema } = mongoose;
 
 const DevisSchema = new Schema(
   {
+    user: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+    },
     name: {
       type: String,
       required: true,
@@ -11,7 +15,6 @@ const DevisSchema = new Schema(
 
     email: {
       type: String,
-      // required: true,
     },
     phoneNumber: {
       type: String,
@@ -19,7 +22,6 @@ const DevisSchema = new Schema(
     },
     message: {
       type: String,
-      // required: true,
     },
     product: {
       type: String,

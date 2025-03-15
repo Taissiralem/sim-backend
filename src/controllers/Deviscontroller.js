@@ -1,7 +1,7 @@
 const Devis = require("../models/Devis.js");
 exports.createDevis = async (req, res) => {
   try {
-    const { name, email, phoneNumber, message, product } = req.body;
+    const { name, email, phoneNumber, message, product, user } = req.body;
 
     const newDevis = new Devis({
       name,
@@ -9,6 +9,7 @@ exports.createDevis = async (req, res) => {
       phoneNumber,
       message,
       product,
+      user,
     });
 
     const savedDevis = await newDevis.save();
@@ -37,7 +38,7 @@ exports.getDevisById = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "Failed to get devis" });
   }
-};  
+};
 
 exports.deleteDevis = async (req, res) => {
   try {
@@ -125,4 +126,3 @@ exports.updateDevis = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
